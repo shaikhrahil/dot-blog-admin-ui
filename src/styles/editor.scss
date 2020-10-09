@@ -1,0 +1,155 @@
+#newBlogView {
+  h1 {
+    font-size: 2.5em;
+  }
+  h2 {
+    font-size: 2em;
+  }
+  h3 {
+    font-size: 1.5em;
+    font-weight: normal;
+  }
+  h4 {
+    font-size: 1em;
+  }
+
+  blockquote {
+    font-style: italic;
+    border-left: 5px solid gray;
+    .cdx-input.cdx-quote__text {
+      font-size: 1.3em;
+      min-height: unset;
+    }
+    .cdx-input.cdx-quote__caption {
+      font-weight: 500;
+      font-size: 1em;
+      text-align: right;
+    }
+    .cdx-input {
+      border: none;
+      box-shadow: none;
+    }
+  }
+}
+
+#blogViewSection {
+  $primary: #fdaf26;
+
+  .block {
+    &-header {
+      margin: 20px 0px;
+      .h1 {
+        font-size: 2.5em;
+        font-weight: bold;
+      }
+      .h2 {
+        font-size: 2em;
+        font-weight: bold;
+      }
+      .h3 {
+        font-size: 1.5em;
+        font-weight: normal;
+      }
+      .h4 {
+        font-size: 1em;
+      }
+    }
+
+    &-table {
+      margin: 20px 0px;
+      table {
+        border-radius: 20px;
+        overflow: hidden;
+        background-color: lighten($primary, 10);
+        padding: 0;
+        width: 100%;
+        // & {
+        border: 1px solid $primary;
+        // }
+        thead {
+          // background-color: lighten($primary, 10);
+          td {
+            text-transform: uppercase;
+            padding: 10px;
+            border-bottom: 2px solid $primary;
+            text-align: center;
+            &:not(:last-child) {
+              border-right: 1px solid $primary;
+            }
+          }
+        }
+
+        tbody {
+          td {
+            padding: 10px;
+            background-color: lighten($primary, 30);
+            text-align: center;
+          }
+        }
+      }
+    }
+
+    &-image {
+      margin: 20px 0px;
+      width: 100%;
+      &.full-width {
+        .image {
+          max-height: 70vh;
+          overflow: hidden;
+        }
+      }
+      &.bordered {
+        padding: 2px;
+        border: 1px solid $primary;
+      }
+      &.with-bg {
+        background-color: $primary;
+      }
+    }
+
+    &-warning {
+      margin: 20px 0px;
+      background-color: lighten($primary, 20);
+      padding: 5px 20px;
+      border-radius: 10px;
+      .title {
+        font-size: 1.5em;
+      }
+    }
+
+    &-code {
+      margin: 20px 0px;
+      code {
+        padding: 30px;
+      }
+    }
+
+    &-quote {
+      font-style: italic;
+      border-left: 5px solid gray;
+      blockquote {
+        font-size: 1.5em;
+      }
+      .author {
+        text-align: right;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .caption {
+    font-size: 13px;
+    color: gray;
+    display: block;
+    text-align: center;
+    a {
+      margin: 0px 10px;
+      font-size: 13px;
+      text-decoration-color: $primary;
+      color: darken($primary, 10);
+    }
+    & + .caption {
+      font-size: 15px;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+overwrite: true
+schema: "http://localhost:9000/blog"
+generates:
+  src/models/Generated.tsx:
+    plugins:
+      - "typescript"
