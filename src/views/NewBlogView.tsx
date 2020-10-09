@@ -6,7 +6,6 @@ import {Form, Formik} from 'formik'
 import {EditorBlock, ModalProps, MutationAddBlogArgs} from 'models'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import {ADD_BLOG} from 'services/BlogService'
-import shortid from 'shortid'
 import 'styles/editor.scss'
 import {blockCenter, getEditorjsInstance} from 'utils'
 import * as Yup from 'yup'
@@ -129,7 +128,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
                   <Input name="title" placeholder="Title" />
                   <Textarea name="subtitle" placeholder="Description" rows={4} />
                   <Checkbox id="publishCheck" name="published" label="Published" />
-                  <Button style={{...blockCenter, width: '50%'}} disabled={loading}>
+                  <Button type="submit" style={{...blockCenter, width: '50%'}} disabled={loading}>
                     Save
                   </Button>
                 </Form>
