@@ -1,9 +1,10 @@
 import {useMutation} from '@apollo/client'
+import {useAuth0} from '@auth0/auth0-react'
 import {API} from '@editorjs/editorjs'
 import {Button, Card, Checkbox, Col, Image, Input, Row, Text, Textarea} from 'components'
 import Modal from 'components/Modal'
 import {Form, Formik} from 'formik'
-import {EditorBlock, ModalProps, MutationAddBlogArgs} from 'models'
+import {EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs} from 'models'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import {ADD_BLOG} from 'services/BlogService'
 import 'styles/editor.scss'
@@ -77,6 +78,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
 
   let title: any = {}
   let subtitle: any = {}
+  let cover: string = ''
 
   ;(blocks as EditorBlock[]).forEach((x, i) => {
     if (x.type === 'header') {
@@ -88,12 +90,20 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
         subtitle.value = x
       }
     }
+    if (x.type === 'image') {
+      cover = (x.data as EditorImageBlock).url
+    }
   })
+
+  const {user} = useAuth0()
 
   const saveBlog = async (formFields: any) => {
     const variables: MutationAddBlogArgs = {
       blog: {
         ...formFields,
+        username: user.given_name,
+        profilePicture: user.picture,
+        cover,
         sections: JSON.stringify(
           blocks.map((x, i) => ({
             ...x,
@@ -135,7 +145,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
               </Col>
               <Col xs={12} sm={5}>
                 <Card>
-                  <Image key={10} src={'https://cdn.britannica.com/67/19367-050-885866B4/Valley-Taurus-Mountains-Turkey.jpg'} />
+                  {cover && <Image key={10} src={cover} />}
                   <Text level="title">{values.title}</Text>
                   <Text level="content" truncate={2}>
                     {values.subtitle}

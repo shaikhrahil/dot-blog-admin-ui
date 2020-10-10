@@ -1,8 +1,8 @@
-import {Col, Row, Text} from 'components'
-import {Card} from 'components/Card'
-import {Image} from 'components/Image'
+import { useQuery } from '@apollo/client'
+import { BlogCard, Col, Masonry, Row } from 'components'
+import { PaginatedBlogs, QueryMyBlogsArgs } from 'models'
 import React from 'react'
-import Masonry from 'react-masonry-css'
+import { GET_MY_BLOGS } from 'services/BlogService'
 import shortid from 'shortid'
 
 const blog = {
@@ -130,7 +130,22 @@ const blog = {
 }
 
 export const MyBlogsView = () => {
-  const divs = Array(10).fill(blog)
+  const blogArgs: QueryMyBlogsArgs = {
+    filters: {
+      drafts: true,
+      first: 1,
+      pageCursor: '',
+      published: true,
+    },
+  }
+
+  const {data, error, loading} = useQuery<{myBlogs: PaginatedBlogs}>(GET_MY_BLOGS, {
+    variables: blogArgs,
+    onError: (err) => {
+      console.error({err})
+    },
+  })
+
   return (
     <Row justify="center">
       <Col xs={12} sm={10} lg={8}>
@@ -145,14 +160,8 @@ export const MyBlogsView = () => {
           columnClassName=""
           style={{display: 'flex'}}
         >
-          {divs.map((b, i) => (
-            <Card key={shortid()} clickable>
-              <Image src={i % 2 ? b.cover : 'https://cdn.britannica.com/67/19367-050-885866B4/Valley-Taurus-Mountains-Turkey.jpg'} />
-              <Text level="title">How to create responsive UI with styled-components</Text>
-              <Text level="content" truncate={2}>
-                {b.subtitle}
-              </Text>
-            </Card>
+          {data?.myBlogs?.data?.edges.map(({node}, i) => (
+            <BlogCard key={shortid()} blog={node} />
           ))}
         </Masonry>
       </Col>

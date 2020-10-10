@@ -1,6 +1,8 @@
-import {Col, Masonry, Row} from 'components'
-import BlogCard from 'components/BlogCard'
+import { useQuery } from '@apollo/client'
+import { BlogCard, Col, Masonry, Row } from 'components'
+import { PaginatedBlogs, QueryStoriesArgs } from 'models'
 import React from 'react'
+import { GET_STORIES } from 'services/BlogService'
 import shortid from 'shortid'
 
 const blog = {
@@ -129,7 +131,20 @@ const blog = {
 }
 
 export const LandingView = () => {
-  const divs = Array(10).fill(blog)
+  const storiesArgs: QueryStoriesArgs = {
+    filters: {
+      first: 1,
+      pageCursor: '',
+    },
+  }
+
+  const {data, error, loading} = useQuery<{stories: PaginatedBlogs}>(GET_STORIES, {
+    variables: storiesArgs,
+    onError: (err) => {
+      console.error({err})
+    },
+  })
+
   return (
     <Row justify="center">
       <Col xs={12} sm={10} lg={8}>
@@ -144,11 +159,8 @@ export const LandingView = () => {
           columnClassName=""
           style={{display: 'flex'}}
         >
-          {divs.map((b, i) => (
-            <BlogCard
-              key={shortid()}
-              blog={{...b, cover: i % 2 ? b.cover : 'https://cdn.britannica.com/67/19367-050-885866B4/Valley-Taurus-Mountains-Turkey.jpg'}}
-            />
+          {data?.stories?.data?.edges.map(({node}, i) => (
+            <BlogCard key={shortid()} blog={node} />
           ))}
         </Masonry>
       </Col>

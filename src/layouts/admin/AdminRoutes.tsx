@@ -1,10 +1,11 @@
 import {ROUTES} from 'configs'
 import {RouteProps} from 'react-router-dom'
-import {MyBlogsView} from 'views'
 import {BlogView} from 'views/BlogView'
 import {DashboardView} from 'views/DashboardView'
 import {DraftsView} from 'views/DraftsView'
+import {MyBlogsView} from 'views/MyBlogsView'
 import {NewBlogView} from 'views/NewBlogView'
+import {NotFoundView} from 'views/NotFoundView'
 import {ProfileView} from 'views/ProfileView'
 
 const AdminRoutes: RouteProps[] = [
@@ -37,6 +38,10 @@ const AdminRoutes: RouteProps[] = [
     path: ROUTES.PROFILE,
     component: ProfileView,
     exact: true,
+  },
+  {
+    path: '',
+    component: NotFoundView,
   },
 ]
 
