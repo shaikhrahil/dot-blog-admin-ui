@@ -1,10 +1,10 @@
-import {ModalProps, SpanSize} from 'models'
-import React, {forwardRef, ReactElement, useEffect, useImperativeHandle, useState} from 'react'
-import {createPortal} from 'react-dom'
+import { ModalProps, SpanSize } from 'models'
+import React, { forwardRef, ReactElement, useEffect, useImperativeHandle, useState } from 'react'
+import { createPortal } from 'react-dom'
 import styled from 'styled-components'
-import {classNames, hexToRgbA} from 'utils'
-import {Col} from './Col'
-import {Row} from './Row'
+import { classNames, hexToRgbA } from 'utils'
+import { Col } from './Col'
+import { Row } from './Row'
 
 interface Props {
   children: ReactElement

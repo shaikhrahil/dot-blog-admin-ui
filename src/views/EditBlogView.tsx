@@ -2,17 +2,20 @@ import {useMutation, useQuery} from '@apollo/client'
 import {useAuth0} from '@auth0/auth0-react'
 import {API} from '@editorjs/editorjs'
 import {Button, Card, Checkbox, Col, Image, Input, Row, Text, Textarea, Modal} from 'components'
+import {BlogPreviewModal} from 'components/BlogPreviewModal'
+import {ROUTES} from 'configs'
 import {Form, Formik} from 'formik'
 import {Blog, BlogDto, EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs, QueryMyBlogArgs} from 'models'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import {useLocation} from 'react-router-dom'
 import {GET_MY_BLOG, UPDATE_BLOG} from 'services'
 import 'styles/editor.scss'
-import {blockCenter, getEditorjsInstance} from 'utils'
+import {blockCenter, getEditorjsInstance, history} from 'utils'
 import * as Yup from 'yup'
+import {BlogView} from './BlogView'
 
 const BlogSchema = Yup.object().shape({
-  title: Yup.string().min(5).max(20).required('Title Required'),
+  title: Yup.string().min(5, 'Minimum 5 characters required').max(50, 'Max 50 characters allowed').required('Title Required'),
   subtitle: Yup.string().required('Description Required'),
   published: Yup.boolean().required(),
 })
@@ -134,6 +137,27 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
     }
     addBlog({variables})
   }
+
+  const previewBlog = (formFields: any) => {
+    const myWindow: any = window.open('/preview', '_blank')
+    myWindow.blog = {
+      ...formFields,
+      username: user.given_name,
+      profilePicture: user.picture,
+      cover,
+      sections: JSON.stringify(
+        blocks.map((x, i) => ({
+          ...x,
+          ...(title.index === i
+            ? {...x, data: {...x.data, text: formFields.title}}
+            : subtitle.index === i
+            ? {...x, data: {...x.data, text: formFields.subtitle}}
+            : x),
+        })),
+      ),
+    }
+  }
+
   return (
     <Modal ref={ref} size="lg">
       <Row justify="space-around" align="center" gutter={['xs', 'md']}>
@@ -154,9 +178,14 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
                   <Input name="title" placeholder="Title" />
                   <Textarea name="subtitle" placeholder="Description" rows={4} />
                   <Checkbox id="publishCheck" name="published" label="Published" />
-                  <Button type="submit" style={{...blockCenter, width: '50%'}} disabled={loading}>
-                    Save
-                  </Button>
+                  <Row justify="space-around">
+                    <Button type="submit" style={{width: '40%'}} disabled={loading}>
+                      Save
+                    </Button>
+                    <Button type="button" style={{width: '40%'}} onClick={() => previewBlog(values)}>
+                      Preview
+                    </Button>
+                  </Row>
                 </Form>
               </Col>
               <Col xs={12} sm={5}>
@@ -171,6 +200,9 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
             </>
           )}
         </Formik>
+        {/* <Modal ref={previewModalRef} size="xl">
+          <BlogPreviewModal />
+        </Modal> */}
       </Row>
     </Modal>
   )
