@@ -1,3 +1,4 @@
-export interface ModalProps {
-  toggle: (show?: boolean) => void
+export interface ModalProps<T = any> {
+  toggle: (show?: boolean, data?: T) => void
+  getData: () => T
 }

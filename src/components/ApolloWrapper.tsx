@@ -1,4 +1,4 @@
-import {ApolloClient, ApolloProvider, createHttpLink, InMemoryCache} from '@apollo/client'
+import {ApolloClient, ApolloProvider, createHttpLink, DefaultOptions, InMemoryCache} from '@apollo/client'
 import {setContext} from '@apollo/client/link/context'
 import {useAuth0} from '@auth0/auth0-react'
 import React, {ReactElement} from 'react'
@@ -7,7 +7,7 @@ interface Props {
   children: ReactElement
 }
 
-const uri = process.env.REACT_APP_SERVER_URL
+const uri = `${process.env.REACT_APP_SERVER_URL}/blog`
 
 export function ApolloWrapper({children}: Props): ReactElement {
   const httpLink = createHttpLink({uri})
@@ -26,9 +26,22 @@ export function ApolloWrapper({children}: Props): ReactElement {
       },
     }
   })
+
+  const defaultOptions: DefaultOptions = {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'ignore',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+  }
+
   const client = new ApolloClient({
     cache: new InMemoryCache(),
     link: authLink.concat(httpLink),
+    defaultOptions,
   })
   return <ApolloProvider client={client}>{children}</ApolloProvider>
 }

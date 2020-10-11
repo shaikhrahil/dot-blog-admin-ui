@@ -5,7 +5,7 @@ import React, {ReactElement} from 'react'
 import {Router} from 'react-router-dom'
 import {createGlobalStyle, ThemeProvider} from 'styled-components'
 import {history} from 'utils'
-import {AppView} from 'views'
+import {AppView} from 'views/AppView'
 
 const domain = process.env.REACT_APP_AUTH0_DOMAIN
 const clientId = process.env.REACT_APP_AUTH0_CLIENT_ID

@@ -4,6 +4,7 @@ import {NewBlogView} from 'views/NewBlogView'
 import {AboutView} from 'views/AboutView'
 import {LandingView} from 'views/LandingView'
 import {BlogView} from 'views/BlogView'
+import {NotFoundView} from 'views/NotFoundView'
 
 const routes: RouteProps[] = [
   {
@@ -25,6 +26,10 @@ const routes: RouteProps[] = [
     path: ROUTES.BLOG,
     component: BlogView,
     exact: true,
+  },
+  {
+    path: '',
+    component: NotFoundView,
   },
 ]
 

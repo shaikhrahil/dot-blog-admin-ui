@@ -8,7 +8,7 @@ export enum LogLevels {
   ERROR = 'ERROR',
 }
 
-export const getEditorjsInstance = (holder: any, onChange: (api: API) => void = () => {}): EditorJS => {
+export const getEditorjsInstance = (holder: any, onChange: (api: API) => void = () => {}, data?: any): EditorJS => {
   const instance = new EditorJS({
     holder,
     tools: EditorConfig,
@@ -16,6 +16,7 @@ export const getEditorjsInstance = (holder: any, onChange: (api: API) => void = 
     placeholder: 'Write your story ...',
     logLevel: LogLevels.ERROR,
     onChange,
+    data,
   })
   return instance
 }

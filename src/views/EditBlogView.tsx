@@ -1,11 +1,12 @@
-import {useMutation} from '@apollo/client'
+import {useMutation, useQuery} from '@apollo/client'
 import {useAuth0} from '@auth0/auth0-react'
 import {API} from '@editorjs/editorjs'
 import {Button, Card, Checkbox, Col, Image, Input, Row, Text, Textarea, Modal} from 'components'
 import {Form, Formik} from 'formik'
-import {EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs} from 'models'
+import {Blog, BlogDto, EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs, QueryMyBlogArgs} from 'models'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
-import {ADD_BLOG} from 'services'
+import {useLocation} from 'react-router-dom'
+import {GET_MY_BLOG, UPDATE_BLOG} from 'services'
 import 'styles/editor.scss'
 import {blockCenter, getEditorjsInstance} from 'utils'
 import * as Yup from 'yup'
@@ -20,7 +21,7 @@ interface State {
   blocks: any[]
 }
 
-export const NewBlogView = () => {
+export const EditBlogView = () => {
   const editorRef = useRef<any>()
   const saveModalRef = useRef<ModalProps>(null)
   const [state, setState] = useState<State>({blocks: []})
@@ -30,6 +31,9 @@ export const NewBlogView = () => {
       e.preventDefault()
       saveModalRef.current?.toggle(true)
     }
+    if (e.key === 'Escape') {
+      saveModalRef.current?.toggle(false)
+    }
   }
 
   const onChange = async (changes: API) => {
@@ -37,28 +41,42 @@ export const NewBlogView = () => {
     setState({...state, blocks})
   }
 
+  const location = useLocation<{blog: BlogDto}>()
+
+  const blogParams: QueryMyBlogArgs = {
+    id: location.state.blog._id,
+  }
+
+  const {data} = useQuery<{myBlog: Blog}>(GET_MY_BLOG, {
+    variables: blogParams,
+    onError: (err) => {
+      console.error({err})
+    },
+  })
+
   useEffect(() => {
-    const editor = getEditorjsInstance(editorRef.current, onChange)
-    editor.isReady.then(() => {
-      editor.blocks?.insert('header', {level: 1})
-      editor.blocks?.delete(0)
-      // editor.focus()
-    })
-    document.addEventListener('keydown', openSaveModal)
-    return () => {
-      document.removeEventListener('keydown', openSaveModal)
-      editor.isReady
-        .then(() => {
+    if (data) {
+      const blocks = JSON.parse(data.myBlog.data?.sections || '') || []
+      const editor = getEditorjsInstance(editorRef.current, onChange, {blocks})
+      document.addEventListener('keydown', openSaveModal)
+      return () => {
+        document.removeEventListener('keydown', openSaveModal)
+        editor.isReady.then(() => {
+          //   editor.blocks?.delete(0)
           editor.destroy()
+          // getBlog()
+          // JSON.parse(data?.myBlog.data?.sections || '').forEach((x: any) => {
+          //   console.log(x)
+          //   editor.blocks?.insert(x.type, x.data)
+          // })
+          // editor.focus()
         })
-        .catch((err) => {
-          console.log({err})
-        })
+      }
     }
-  }, [])
+  }, [data])
 
   return (
-    <Row justify="center" id="newBlogView">
+    <Row justify="center" id="editBlogView">
       <SaveBlogModal ref={saveModalRef} blocks={state.blocks} />
       <div ref={editorRef} style={{width: '90%'}} id="editorjs"></div>
     </Row>
@@ -66,7 +84,7 @@ export const NewBlogView = () => {
 }
 
 const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
-  const [addBlog, {loading, error}] = useMutation(ADD_BLOG, {
+  const [addBlog, {loading, error}] = useMutation(UPDATE_BLOG, {
     onError: (err) => {
       console.log({err})
     },
@@ -92,10 +110,12 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
   })
 
   const {user} = useAuth0()
+  const location = useLocation<{blog: BlogDto}>()
 
   const saveBlog = async (formFields: any) => {
     const variables: MutationAddBlogArgs = {
       blog: {
+        _id: location.state.blog._id,
         ...formFields,
         username: user.given_name,
         profilePicture: user.picture,
@@ -123,7 +143,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
           initialValues={{
             title: title.value?.data.text || '',
             subtitle: subtitle.value?.data.text || '',
-            published: false,
+            published: true,
           }}
           validationSchema={BlogSchema}
         >

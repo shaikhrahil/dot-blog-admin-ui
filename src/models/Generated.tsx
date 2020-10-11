@@ -15,8 +15,17 @@ export type AppResponse = {
   message: Scalars['String'];
 };
 
-export type CommentDto = {
-  __typename?: 'CommentDTO';
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  length: Scalars['Float'];
+  hasNextPage: Scalars['Boolean'];
+  hasPerviousPage: Scalars['Boolean'];
+  startCursor: Scalars['String'];
+  endCursor: Scalars['String'];
+};
+
+export type Comment = {
+  __typename?: 'Comment';
   _id: Scalars['ID'];
   text: Scalars['String'];
   by: Scalars['String'];
@@ -24,39 +33,96 @@ export type CommentDto = {
   pinned: Scalars['Boolean'];
 };
 
+export type Author = {
+  __typename?: 'Author';
+  authId: Scalars['String'];
+  name: Scalars['String'];
+  profilePic: Scalars['String'];
+};
+
 export type BlogDto = {
   __typename?: 'BlogDTO';
   _id: Scalars['ID'];
-  user: Scalars['String'];
+  author: Author;
   title: Scalars['String'];
   subtitle: Scalars['String'];
+  cover: Scalars['String'];
   published: Scalars['Boolean'];
   sections: Scalars['String'];
-  comments: Array<CommentDto>;
+  comments: Array<Comment>;
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
 
+export type Blog = {
+  __typename?: 'Blog';
+  success: Scalars['Boolean'];
+  message: Scalars['String'];
+  data?: Maybe<BlogDto>;
+};
+
+export type BlogEdge = {
+  __typename?: 'BlogEdge';
+  node: BlogDto;
+  cursor: Scalars['String'];
+};
+
+export type PaginatedBlog = {
+  __typename?: 'PaginatedBlog';
+  edges: Array<BlogEdge>;
+  pageInfo: PageInfo;
+};
+
+export type PaginatedBlogs = {
+  __typename?: 'PaginatedBlogs';
+  success: Scalars['Boolean'];
+  message: Scalars['String'];
+  data?: Maybe<PaginatedBlog>;
+};
+
 export type Query = {
   __typename?: 'Query';
-  blogs: Array<BlogDto>;
-  blog?: Maybe<BlogDto>;
+  stories: PaginatedBlogs;
+  story?: Maybe<Blog>;
+  myBlogs: PaginatedBlogs;
+  myBlog?: Maybe<Blog>;
 };
 
 
-export type QueryBlogsArgs = {
-  before: Scalars['String'];
-  first: Scalars['Int'];
+export type QueryStoriesArgs = {
+  filters: GetBlogs;
 };
 
 
-export type QueryBlogArgs = {
+export type QueryStoryArgs = {
   id: Scalars['String'];
+};
+
+
+export type QueryMyBlogsArgs = {
+  filters: GetMyBlogs;
+};
+
+
+export type QueryMyBlogArgs = {
+  id: Scalars['String'];
+};
+
+export type GetBlogs = {
+  first: Scalars['Float'];
+  pageCursor: Scalars['String'];
+};
+
+export type GetMyBlogs = {
+  first: Scalars['Float'];
+  pageCursor: Scalars['String'];
+  drafts: Scalars['Boolean'];
+  published: Scalars['Boolean'];
 };
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addBlog: BlogDto;
+  addBlog: Blog;
   updateBlog: AppResponse;
   deleteBlog: AppResponse;
   comment: AppResponse;
@@ -112,6 +178,9 @@ export type MutationUnlikeArgs = {
 };
 
 export type AddBlog = {
+  username: Scalars['String'];
+  profilePicture: Scalars['String'];
+  cover: Scalars['String'];
   title: Scalars['String'];
   subtitle: Scalars['String'];
   published: Scalars['Boolean'];
@@ -119,6 +188,9 @@ export type AddBlog = {
 };
 
 export type UpdateBlog = {
+  username?: Maybe<Scalars['String']>;
+  profilePicture?: Maybe<Scalars['String']>;
+  cover?: Maybe<Scalars['String']>;
   title?: Maybe<Scalars['String']>;
   subtitle?: Maybe<Scalars['String']>;
   published?: Maybe<Scalars['Boolean']>;

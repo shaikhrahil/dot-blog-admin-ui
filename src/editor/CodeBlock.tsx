@@ -1,7 +1,7 @@
 import {EditorCodeBlock} from 'models'
 import React, {useEffect, useRef} from 'react'
 import hljs from 'highlight.js'
-import 'highlight.js/styles/hopscotch.css' // import your preferred style
+import 'highlight.js/styles/dracula.css' // import your preferred style
 
 export const CodeBlock = (props: EditorCodeBlock) => {
   const ref = useRef<HTMLDivElement>(null)
@@ -14,11 +14,16 @@ export const CodeBlock = (props: EditorCodeBlock) => {
 
   return (
     <div className="block-code">
-      <pre>
-        <code ref={ref}>
-          {props.code}
-        </code>
-      </pre>
+      {/* <pre>
+        <code ref={ref}>{props.code}</code>
+      </pre> */}
+      {/* {props.code} */}
+      <code
+        ref={ref}
+        dangerouslySetInnerHTML={{
+          __html: props.code,
+        }}
+      ></code>
     </div>
   )
 }

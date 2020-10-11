@@ -19,7 +19,8 @@ import {ToolConfig} from '@editorjs/editorjs'
 // const ImageTool = window.Image
 import InlineImage from 'editorjs-inline-image'
 // import {EditorBlockTypes} from 'models'
-// import CodeMirror from '@bomdi/codebox'
+import CodeMirror from '@bomdi/codebox'
+// import * as test from 'highlight.js/styles/hopscotch.css' // import your preferred style
 
 export const EditorConfig: ToolConfig = {
   embed: {
@@ -38,11 +39,18 @@ export const EditorConfig: ToolConfig = {
   },
   list: List,
   warning: Warning,
-  code: Code,
+  code: {
+    class: CodeMirror,
+    config: {
+      themeURL: 'https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.1/build/styles/dracula.min.css', // Optional
+      themeName: 'atom-one-dark', // Optional
+      useDefaultTheme: 'dark', // Optional. This also determines the background color of the language select drop-down
+    },
+  },
   linkTool: {
     class: LinkTool,
     config: {
-      endpoint: 'https://crossorigin.me', // Your backend endpoint for url data fetching
+      endpoint: `${process.env.REACT_APP_SERVER_URL}/meta-data`, // Your backend endpoint for url data fetching
     },
   },
   image: {
