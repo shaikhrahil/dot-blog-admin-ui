@@ -1,6 +1,6 @@
 import {useAuth0} from '@auth0/auth0-react'
 import {Heart} from '@styled-icons/boxicons-solid/Heart'
-import {Button, Footer, Header, Link, Logo, Spacer} from 'components'
+import {Button, Footer, Header, NavLink, Logo, Spacer} from 'components'
 import {ROUTES} from 'configs'
 import React, {ReactElement} from 'react'
 import {Route, Switch} from 'react-router-dom'
@@ -14,9 +14,15 @@ function Auth(): ReactElement {
       <Header>
         <Logo alt="logo" />
         <Spacer size="lg">
-          <Link to={ROUTES.ROOT}>Stories</Link>
-          <Link to={ROUTES.ABOUT}>About</Link>
-          <Link to={ROUTES.NEW_BLOG}>Try out the editor !</Link>
+          <NavLink to={ROUTES.ROOT} exact>
+            Stories
+          </NavLink>
+          <NavLink to={ROUTES.ABOUT} exact>
+            About
+          </NavLink>
+          <NavLink to={ROUTES.NEW_BLOG} exact>
+            Try out the editor !
+          </NavLink>
           <Button
             onClick={() => {
               loginWithRedirect()

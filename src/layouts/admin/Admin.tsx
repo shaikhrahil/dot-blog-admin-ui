@@ -1,6 +1,6 @@
 import {useAuth0} from '@auth0/auth0-react'
 import {Heart} from '@styled-icons/boxicons-solid/Heart'
-import {Dropdown, DropdownMenuItem, Footer, Header, Link, Logo, Row} from 'components'
+import {Dropdown, DropdownMenuItem, Footer, Header, NavLink, Logo, Row} from 'components'
 import {Avatar} from 'components/Avatar'
 import {ROUTES} from 'configs'
 import React, {ReactElement} from 'react'
@@ -15,10 +15,18 @@ function AdminLayout(): ReactElement {
       <Header>
         <Logo alt="logo" />
         <Row align="middle" gutter="lg">
-          <Link to={ROUTES.ROOT}>Stories</Link>
-          <Link to={ROUTES.MY_BLOGS}>My Blogs</Link>
-          <Link to={ROUTES.ABOUT}>About</Link>
-          <Link to={ROUTES.NEW_BLOG}>New Blog</Link>
+          <NavLink to={ROUTES.ROOT} exact>
+            Stories
+          </NavLink>
+          <NavLink to={ROUTES.MY_BLOGS} exact>
+            My Blogs
+          </NavLink>
+          <NavLink to={ROUTES.ABOUT} exact>
+            About
+          </NavLink>
+          <NavLink to={ROUTES.NEW_BLOG} exact>
+            New Blog
+          </NavLink>
           <Dropdown
             title={
               <>

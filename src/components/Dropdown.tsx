@@ -19,20 +19,6 @@ export const DropdownMenuItem = styled.div`
   }
 `
 
-export const StyledDropdown = styled.button`
-  cursor: pointer;
-  transition: transform 0.2s;
-  border: none;
-  display: flex;
-  align-items: center;
-  &:focus {
-    outline: none;
-  }
-  background: none;
-  z-index: 11;
-  position: relative;
-`
-
 const StyledDropdownMenu = styled.div`
   position: absolute;
   transition: top 0.2s;
@@ -42,8 +28,8 @@ const StyledDropdownMenu = styled.div`
   z-index: 10;
   min-width: 100%;
   border-radius: 20px;
-  /* ${({theme}) => theme.nm}; */
   border: ${({theme}) => `2px solid ${theme.primary}`};
+
   ::before,
   ::after {
     border-left: 10px solid transparent;
@@ -55,6 +41,23 @@ const StyledDropdownMenu = styled.div`
     margin-left: -20px;
     position: absolute;
   }
+`
+
+export const StyledDropdown = styled.button`
+  cursor: pointer;
+  transition: transform 0.2s;
+  border: none;
+  display: flex;
+  align-items: center;
+  &:focus {
+    outline: none;
+    & + ${StyledDropdownMenu} {
+      z-index: 100;
+    }
+  }
+  background: none;
+  z-index: 11;
+  position: relative;
 `
 
 interface Props {
@@ -83,7 +86,7 @@ export const Dropdown = (props: Props) => {
   }
 
   return (
-    <div onBlur={closeMenu} style={{position: 'relative', display: 'inline-block'}}>
+    <div onBlur={closeMenu} onClick={(e) => e.stopPropagation()} style={{position: 'relative', display: 'inline-block'}}>
       <StyledDropdown onClick={openMenu}>{props.title}</StyledDropdown>
       <StyledDropdownMenu ref={menuRef}>
         <div className="w-100" onClick={closeMenu}>

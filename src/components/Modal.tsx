@@ -1,5 +1,5 @@
 import {ModalProps, SpanSize} from 'models'
-import React, {forwardRef, ReactElement, useImperativeHandle, useState} from 'react'
+import React, {forwardRef, ReactElement, useEffect, useImperativeHandle, useState} from 'react'
 import {createPortal} from 'react-dom'
 import styled from 'styled-components'
 import {classNames, hexToRgbA} from 'utils'
@@ -13,6 +13,7 @@ interface Props {
 
 interface State {
   show: boolean
+  data?: any
 }
 
 const StyledModal = styled(Col)`
@@ -49,7 +50,7 @@ const BackDrop = styled(Row)`
   }
 `
 
-const Modal = forwardRef<ModalProps, Props>(({children, size}, ref) => {
+export const Modal = forwardRef<ModalProps, Props>(({children, size}, ref) => {
   const widths: Record<SpanSize, number> = {
     lg: 8,
     md: 7,
@@ -59,26 +60,40 @@ const Modal = forwardRef<ModalProps, Props>(({children, size}, ref) => {
   }
   const [state, setState] = useState<State>({show: false})
   const {show} = state
-  const toggle = (show: boolean = !state.show) => {
-    setState({...state, show})
+  const toggle = (show: boolean = !state.show, data?: any) => {
+    if (data) {
+      setState({...state, show, data})
+    } else {
+      setState({...state, show})
+    }
   }
+
+  const toggleShortcuts = async (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      toggle(false)
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', toggleShortcuts)
+    return () => {
+      document.removeEventListener('keydown', toggleShortcuts)
+    }
+  }, [])
 
   useImperativeHandle(ref, () => ({
     toggle,
+    getData: () => state.data,
   }))
 
-  return document.getElementById('modal') ? (
-    createPortal(
-      <BackDrop className={classNames({show})} onClick={() => toggle(false)}>
-        <StyledModal xs={10} md={widths[size || 'md']} onClick={(e) => e.stopPropagation()}>
-          {children}
-        </StyledModal>
-      </BackDrop>,
-      document.getElementById('modal')!,
-    )
-  ) : (
-    <BackDrop className={classNames({show})} onClick={() => toggle(false)}></BackDrop>
-  )
+  return document.getElementById('modal')
+    ? createPortal(
+        <BackDrop className={classNames({show})} onClick={() => toggle(false)}>
+          <StyledModal xs={10} md={widths[size || 'md']} onClick={(e) => e.stopPropagation()}>
+            {children}
+          </StyledModal>
+        </BackDrop>,
+        document.getElementById('modal')!,
+      )
+    : null
 })
-
-export default Modal
