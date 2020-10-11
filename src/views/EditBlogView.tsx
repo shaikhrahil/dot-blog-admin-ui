@@ -47,7 +47,7 @@ export const EditBlogView = () => {
     id: location.state.blog._id,
   }
 
-  const {data} = useQuery<{myBlog: Blog}>(GET_MY_BLOG, {
+  const {data} = useQuery<{story: Blog}>(GET_MY_BLOG, {
     variables: blogParams,
     onError: (err) => {
       console.error({err})
@@ -56,7 +56,7 @@ export const EditBlogView = () => {
 
   useEffect(() => {
     if (data) {
-      const blocks = JSON.parse(data.myBlog.data?.sections || '') || []
+      const blocks = JSON.parse(data.story?.data?.sections || '') || []
       const editor = getEditorjsInstance(editorRef.current, onChange, {blocks})
       document.addEventListener('keydown', openSaveModal)
       return () => {

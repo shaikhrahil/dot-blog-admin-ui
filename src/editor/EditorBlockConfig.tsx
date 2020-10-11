@@ -5,6 +5,7 @@ import {DelimiterBlock} from './DelimiterBlock'
 import {EmbedBlock} from './EmbedBlock'
 import {HeaderBlock} from './HeaderBlock'
 import {ImageBlock} from './ImageBlock'
+import {LinkBlock} from './LinkBlock'
 import {ListBlock} from './ListBlock'
 import {ParagraphBlock} from './ParagraphBlock'
 import {QuoteBlock} from './QuoteBlock'
@@ -22,4 +23,5 @@ export const EditorBlockConfig: Record<EditorBlockTypes, FC<any>> = {
   table: TableBlock,
   warning: WarningBlock,
   embed: EmbedBlock,
+  linkTool: LinkBlock,
 }

@@ -34,7 +34,7 @@
 }
 
 #blogViewSection {
-  $primary: #fdaf26;
+  $primary: #39ff14;
 
   .block {
     &-header {
@@ -134,6 +134,48 @@
       .author {
         text-align: right;
         font-weight: 500;
+      }
+    }
+
+    &-link {
+      width: 80%;
+      cursor: pointer;
+      display: flex;
+      padding: 15px;
+      border: 1px solid $primary;
+      text-decoration: none;
+      color: inherit;
+      // background: white;
+      &:hover {
+        box-shadow: 0px 0px 5px 0px $primary;
+      }
+      .content {
+        flex: 1;
+        padding: 10px;
+        border-right: 1px solid lightgray;
+        .title {
+          font-weight: 800;
+        }
+        .description {
+        }
+      }
+
+      .cover {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        width: 20%;
+      }
+    }
+
+    &-embed {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      & > .caption {
+        width: 100%;
       }
     }
   }

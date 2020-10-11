@@ -3,7 +3,7 @@ export interface EditorBlock<T = any> {
   type: EditorBlockTypes
 }
 
-export type EditorBlockTypes = 'header' | 'paragraph' | 'table' | 'image' | 'code' | 'quote' | 'list' | 'warning' | 'delimiter' | 'embed'
+export type EditorBlockTypes = 'header' | 'paragraph' | 'table' | 'image' | 'code' | 'quote' | 'list' | 'warning' | 'delimiter' | 'embed' | 'linkTool'
 
 // header
 
@@ -79,4 +79,19 @@ export interface EditorEmbedBlock {
   service: string
   source: string
   width: number
+}
+
+// link
+
+export interface EditorLinkMetadata {
+  title: string
+  description: string
+  image: {
+    url: string
+  }
+}
+
+export interface EditorLinkBlock {
+  link: string
+  meta: EditorLinkMetadata
 }

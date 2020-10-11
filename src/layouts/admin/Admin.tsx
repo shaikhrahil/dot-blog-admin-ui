@@ -57,7 +57,7 @@ function AdminLayout(): ReactElement {
 
       <Footer>
         <span>Created with</span>
-        <Heart color="red" width="25px" style={{margin: '0px 8px'}} />
+        <Heart color="#39FF14" width="25px" style={{margin: '0px 8px'}} />
         <span>By Rahil</span>
       </Footer>
     </section>
