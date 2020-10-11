@@ -1,10 +1,11 @@
 import {useQuery} from '@apollo/client'
-import {BlogCard, Col, Masonry, Row} from 'components'
+import {BlogCard, Col, Loader, Masonry, Row, Text} from 'components'
 import {BlogDto, PaginatedBlogs, QueryStoriesArgs} from 'models'
 import React, {useCallback} from 'react'
 import {GET_STORIES} from 'services'
 import shortid from 'shortid'
-import {history} from 'utils'
+import {blockCenter, history} from 'utils'
+import NoDataImg from 'images/no_data.svg'
 
 export const LandingView = () => {
   const storiesArgs: QueryStoriesArgs = {
@@ -22,7 +23,7 @@ export const LandingView = () => {
   })
 
   const openBlog = useCallback((blog: BlogDto) => {
-    history.push(`/blog/${blog.title.toLowerCase().replace(' ', '-')}`, {blog})
+    history.push(`/blog/${blog.title.toLowerCase().replaceAll(' ', '-')}-${blog._id}`, {blog})
   }, [])
 
   return (
@@ -44,6 +45,19 @@ export const LandingView = () => {
           ))}
         </Masonry>
       </Col>
+      {loading && (
+        <Col xs={12} style={{marginTop: data?.stories?.data?.edges.length ? '' : '200px'}}>
+          <Loader />
+        </Col>
+      )}
+      {!loading && !data?.stories?.data?.edges.length && (
+        <Col xs={12} sm={5}>
+          <img src={NoDataImg} width="55%" style={{...blockCenter, marginTop: '100px'}} alt="No Stories Yet !" />
+          <Text level="content" align="center" style={{marginTop: '20px'}}>
+            No Stories Yet !
+          </Text>
+        </Col>
+      )}
     </Row>
   )
 }

@@ -37,7 +37,7 @@ export const MyBlogsView = () => {
   })
 
   const openBlog = useCallback((blog: BlogDto) => {
-    history.push(`/blog/${blog.title.toLowerCase().replace(' ', '-')}`, {blog})
+    history.push(`/blog/${blog.title.toLowerCase().replaceAll(' ', '-')}-${blog._id}`, {blog})
   }, [])
 
   const editBlog = useCallback((blog: BlogDto) => {
