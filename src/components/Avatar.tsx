@@ -6,9 +6,10 @@ const avatarSizes = {
   large: 100,
 }
 
-export const Avatar = styled.img<{size: keyof typeof avatarSizes}>`
+export const Avatar = styled.img<{size: keyof typeof avatarSizes; bordered?: boolean}>`
   width: ${({size}) => `${avatarSizes[size]}px`};
   height: ${({size}) => `${avatarSizes[size]}px`};
   border-radius: 50%;
   margin-right: 10px;
+  border: ${({theme, bordered}) => (bordered ? `2px solid ${theme.primary}` : '')};
 `

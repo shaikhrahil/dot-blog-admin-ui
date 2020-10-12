@@ -1,14 +1,14 @@
 import {useMutation, useQuery} from '@apollo/client'
-import {BookOpen} from '@styled-icons/boxicons-regular/BookOpen'
-import {Edit} from '@styled-icons/boxicons-regular/Edit'
-import {TrashAlt} from '@styled-icons/boxicons-regular/TrashAlt'
-import {BlogCard, Button, Col, Masonry, Modal, Row, Text} from 'components'
+import {BookOpen, Edit, TrashAlt} from '@styled-icons/boxicons-regular'
+import {Button, Col, Loader, Modal, Row, Text} from 'components'
+import {BlogList} from 'components/BlogList'
+import NoDataImg from 'images/no_data.svg'
+import produce from 'immer'
 import {BlogDto, ModalProps, PaginatedBlogs, QueryMyBlogsArgs} from 'models'
-import React, {useCallback, useRef} from 'react'
+import React, {useCallback, useEffect, useRef} from 'react'
 import {DELETE_BLOG, GET_MY_BLOGS} from 'services'
-import shortid from 'shortid'
 import styled from 'styled-components'
-import {history} from 'utils'
+import {blockCenter, history} from 'utils'
 const CardActions = styled.div`
   transition: color 0.2s;
   color: inherit;
@@ -19,17 +19,17 @@ const CardActions = styled.div`
   text-align: center;
 `
 
-export const MyBlogsView = () => {
-  const blogArgs: QueryMyBlogsArgs = {
-    filters: {
-      drafts: true,
-      first: 10,
-      pageCursor: '',
-      published: true,
-    },
-  }
+const blogArgs: QueryMyBlogsArgs = {
+  filters: {
+    drafts: true,
+    first: 7,
+    pageCursor: '',
+    published: true,
+  },
+}
 
-  const {data, error, loading} = useQuery<{myBlogs: PaginatedBlogs}>(GET_MY_BLOGS, {
+export const MyBlogsView = () => {
+  const {data, error, loading, fetchMore} = useQuery<{myBlogs: PaginatedBlogs}>(GET_MY_BLOGS, {
     variables: blogArgs,
     onError: (err) => {
       console.error({err})
@@ -46,64 +46,88 @@ export const MyBlogsView = () => {
 
   const [deleteBlog, deleteBlogReq] = useMutation(DELETE_BLOG, {
     onError: (err) => {
-      console.log({err})
+      console.error({err})
+    },
+    update: (cache, {data}) => {
+      if ((data as any).deleteBlog?.success) {
+        const blogs = cache.readQuery<{myBlogs: PaginatedBlogs}>({
+          query: GET_MY_BLOGS,
+        })
+
+        const newBlogs = produce(blogs, (draftState) => {
+          draftState!.myBlogs!.data!.edges = draftState?.myBlogs?.data?.edges.filter((x) => x.node._id !== (data as any).deleteBlog.data._id) || []
+        })
+
+        cache.writeQuery({
+          query: GET_MY_BLOGS,
+          data: newBlogs,
+        })
+
+        deleteModalRef.current?.toggle(false)
+      }
     },
   })
 
-  const modalRef = useRef<ModalProps<BlogDto>>(null)
+  const deleteModalRef = useRef<ModalProps<BlogDto>>(null)
+
+  const loadMore = useCallback(() => {
+    blogArgs.filters.pageCursor = data?.myBlogs?.data?.pageInfo.endCursor || ''
+    fetchMore({
+      variables: blogArgs,
+      updateQuery: (prev, {fetchMoreResult}) => {
+        if (!fetchMoreResult?.myBlogs.success) return prev
+        const res = produce(fetchMoreResult, (draft) => {
+          draft!.myBlogs.data!.edges.unshift(...(prev.myBlogs?.data?.edges || []))
+        })
+        return res!.myBlogs.data ? res! : prev
+      },
+    })
+  }, [data?.myBlogs?.data?.pageInfo.endCursor])
+
+  // useEffect(() => {
+  //   window.onscroll = () => {
+  //     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+  //     }
+  //   }
+  //   return () => {
+  //     window.onscroll = null
+  //   }
+  // }, )
+
+  const actionOverlay = (node: BlogDto) => (
+    <Row justify="space-around" align="center" style={{height: '100%'}}>
+      <Col xs={node.cover ? 2 : 1.3}>
+        <CardActions onClick={() => openBlog(node)}>
+          <BookOpen title="View" />
+          <div>View</div>
+        </CardActions>
+      </Col>
+      <Col xs={node.cover ? 2 : 1.3}>
+        <CardActions onClick={() => editBlog(node)}>
+          <Edit title="Edit" />
+          <div>Edit</div>
+        </CardActions>
+      </Col>
+      <Col xs={node.cover ? 2 : 1.3}>
+        <CardActions onClick={() => deleteModalRef.current?.toggle(true, node)}>
+          <TrashAlt title="Delete" />
+          <div>Delete</div>
+        </CardActions>
+      </Col>
+    </Row>
+  )
 
   return (
     <Row justify="center">
       <Col xs={12} sm={10} lg={8}>
-        <Masonry
-          breakpointCols={{
-            default: 3,
-            1100: 3,
-            700: 2,
-            500: 1,
-          }}
-          className=""
-          columnClassName=""
-          style={{display: 'flex'}}
-        >
-          {data?.myBlogs?.data?.edges.map(({node}) => (
-            <BlogCard
-              key={shortid()}
-              blog={node}
-              onClick={() => editBlog(node)}
-              actionOverlay={
-                <Row justify="space-around" align="center" style={{height: '100%'}}>
-                  <Col xs={node.cover ? 2 : 0.8}>
-                    <CardActions onClick={() => openBlog(node)}>
-                      <BookOpen title="View" />
-                      <div>View</div>
-                    </CardActions>
-                  </Col>
-                  <Col xs={node.cover ? 2 : 0.8}>
-                    <CardActions onClick={() => editBlog(node)}>
-                      <Edit title="Edit" />
-                      <div>Edit</div>
-                    </CardActions>
-                  </Col>
-                  <Col xs={node.cover ? 2 : 0.8}>
-                    <CardActions onClick={() => modalRef.current?.toggle(true, node)}>
-                      <TrashAlt title="Delete" />
-                      <div>Delete</div>
-                    </CardActions>
-                  </Col>
-                </Row>
-              }
-            />
-          ))}
-        </Masonry>
-
-        <Modal ref={modalRef} size="sm">
+        <BlogList nodes={data?.myBlogs.data?.edges || []} openBlog={openBlog} actionOverlay={actionOverlay} loadMore={loadMore} />
+        <Modal ref={deleteModalRef} size="sm">
           <Row justify="center" gutter={['md', 'xl']}>
             <Text level="subtitle">Are you sure you want to delete this blog ? </Text>
             <Row justify="center" gutter={['md', 'md']} style={{width: '100%'}}>
               <Button
                 onClick={() => {
-                  deleteBlog({variables: {id: modalRef.current?.getData()?._id}})
+                  deleteBlog({variables: {id: deleteModalRef.current?.getData()?._id}})
                 }}
                 disabled={deleteBlogReq.loading}
               >
@@ -111,7 +135,7 @@ export const MyBlogsView = () => {
               </Button>
               <Button
                 onClick={() => {
-                  modalRef.current?.toggle(false)
+                  deleteModalRef.current?.toggle(false)
                 }}
                 disabled={deleteBlogReq.loading}
               >
@@ -121,6 +145,21 @@ export const MyBlogsView = () => {
           </Row>
         </Modal>
       </Col>
+
+      {!loading && !data?.myBlogs?.data?.edges.length && (
+        <Col xs={12} sm={5}>
+          <img src={NoDataImg} width="55%" style={{...blockCenter, marginTop: '100px'}} alt="No Blogs Yet !" />
+          <Text level="content" align="center" style={{marginTop: '20px'}}>
+            You have not written any blogs yet !
+          </Text>
+        </Col>
+      )}
+
+      {loading && (
+        <Col xs={12} style={{marginTop: data?.myBlogs?.data?.edges.length ? '' : '200px'}}>
+          <Loader />
+        </Col>
+      )}
     </Row>
   )
 }

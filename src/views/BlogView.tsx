@@ -2,18 +2,19 @@ import {useQuery} from '@apollo/client'
 import {useAuth0} from '@auth0/auth0-react'
 import {Col, Row} from 'components'
 import {EditorBlockConfig} from 'editor/EditorBlockConfig'
-import {Blog, BlogDto, EditorBlock, QueryStoryArgs} from 'models'
+import {Blog, EditorBlock, QueryStoryArgs} from 'models'
 import React from 'react'
-import {useLocation} from 'react-router-dom'
+import {useParams} from 'react-router-dom'
 import {GET_MY_BLOG, GET_STORY} from 'services'
 import shortid from 'shortid'
 import 'styles/editor.scss'
 
 export const BlogView = () => {
-  const location = useLocation<{blog: BlogDto}>()
+  const params = useParams<{slug: string}>()
 
+  const slug = params.slug.split('-')
   const blogParams: QueryStoryArgs = {
-    id: location.state.blog._id,
+    id: slug[slug.length - 1],
   }
 
   const {isAuthenticated} = useAuth0()

@@ -1,18 +1,15 @@
-import {useMutation, useQuery} from '@apollo/client'
-import {useAuth0} from '@auth0/auth0-react'
-import {API} from '@editorjs/editorjs'
-import {Button, Card, Checkbox, Col, Image, Input, Row, Text, Textarea, Modal} from 'components'
-import {BlogPreviewModal} from 'components/BlogPreviewModal'
-import {ROUTES} from 'configs'
-import {Form, Formik} from 'formik'
-import {Blog, BlogDto, EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs, QueryMyBlogArgs} from 'models'
-import React, {forwardRef, useEffect, useRef, useState} from 'react'
-import {useLocation} from 'react-router-dom'
-import {GET_MY_BLOG, UPDATE_BLOG} from 'services'
+import { useMutation, useQuery } from '@apollo/client'
+import { useAuth0 } from '@auth0/auth0-react'
+import { API } from '@editorjs/editorjs'
+import { Button, Card, Checkbox, Col, Image, Input, Modal, Row, Text, Textarea } from 'components'
+import { Form, Formik } from 'formik'
+import { Blog, BlogDto, EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs, QueryMyBlogArgs } from 'models'
+import React, { forwardRef, useEffect, useRef, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { GET_MY_BLOG, UPDATE_BLOG } from 'services'
 import 'styles/editor.scss'
-import {blockCenter, getEditorjsInstance, history} from 'utils'
+import { getEditorjsInstance, history } from 'utils'
 import * as Yup from 'yup'
-import {BlogView} from './BlogView'
 
 const BlogSchema = Yup.object().shape({
   title: Yup.string().min(5, 'Minimum 5 characters required').max(50, 'Max 50 characters allowed').required('Title Required'),
@@ -90,6 +87,9 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
   const [addBlog, {loading, error}] = useMutation(UPDATE_BLOG, {
     onError: (err) => {
       console.log({err})
+    },
+    onCompleted: ({updateBlog}: {updateBlog: Blog}) => {
+      history.push(`/blog/${updateBlog.data?.title.toLowerCase().replaceAll(' ', '-')}-${updateBlog.data?._id}`)
     },
   })
 

@@ -1,7 +1,8 @@
-import {ApolloClient, ApolloProvider, createHttpLink, DefaultOptions, InMemoryCache} from '@apollo/client'
+import {ApolloClient, ApolloProvider, createHttpLink, DefaultOptions} from '@apollo/client'
 import {setContext} from '@apollo/client/link/context'
 import {useAuth0} from '@auth0/auth0-react'
 import React, {ReactElement} from 'react'
+import {cache} from 'utils'
 
 interface Props {
   children: ReactElement
@@ -39,9 +40,9 @@ export function ApolloWrapper({children}: Props): ReactElement {
   }
 
   const client = new ApolloClient({
-    cache: new InMemoryCache(),
+    cache,
     link: authLink.concat(httpLink),
-    defaultOptions,
+    // defaultOptions,
   })
   return <ApolloProvider client={client}>{children}</ApolloProvider>
 }

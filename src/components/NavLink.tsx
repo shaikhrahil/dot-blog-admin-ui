@@ -8,6 +8,9 @@ export const NavLink = styled(RouterLink)`
   font-weight: 500;
   border-bottom: 2px solid transparent;
   transition: all 0.2s;
+  & > * {
+    margin: 0 5px;
+  }
   :hover {
     border-color: ${(props) => props.theme.secondary};
     /* color: ${(props) => props.theme.secondary}; */
