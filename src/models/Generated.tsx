@@ -46,7 +46,7 @@ export type BlogDto = {
   author: Author;
   title: Scalars['String'];
   subtitle: Scalars['String'];
-  cover: Scalars['String'];
+  cover?: Maybe<Scalars['String']>;
   published: Scalars['Boolean'];
   sections: Scalars['String'];
   comments: Array<Comment>;
@@ -123,13 +123,11 @@ export type GetMyBlogs = {
 export type Mutation = {
   __typename?: 'Mutation';
   addBlog: Blog;
-  updateBlog: AppResponse;
-  deleteBlog: AppResponse;
+  updateBlog: Blog;
+  deleteBlog: Blog;
   comment: AppResponse;
   editComment: AppResponse;
   deleteComment: AppResponse;
-  like: AppResponse;
-  unlike: AppResponse;
 };
 
 
@@ -163,18 +161,6 @@ export type MutationEditCommentArgs = {
 export type MutationDeleteCommentArgs = {
   blogId: Scalars['String'];
   commentId: Scalars['String'];
-};
-
-
-export type MutationLikeArgs = {
-  by: Scalars['String'];
-  assetId: Scalars['String'];
-};
-
-
-export type MutationUnlikeArgs = {
-  by: Scalars['String'];
-  assetId: Scalars['String'];
 };
 
 export type AddBlog = {

@@ -12,6 +12,7 @@ export const GET_STORIES = gql`
             createdAt
             title
             cover
+            subtitle
             author {
               authId
               name
@@ -127,6 +128,7 @@ export const ADD_BLOG = gql`
       message
       data {
         _id
+        title
       }
     }
   }

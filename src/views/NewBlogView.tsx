@@ -1,15 +1,13 @@
 import {useMutation} from '@apollo/client'
 import {useAuth0} from '@auth0/auth0-react'
 import {API} from '@editorjs/editorjs'
-import {Button, Card, Checkbox, Col, Image, Input, Row, Text, Textarea, Modal} from 'components'
-import {BlogPreviewModal} from 'components/BlogPreviewModal'
-import {ROUTES} from 'configs'
+import {Button, Card, Checkbox, Col, Image, Input, Modal, Row, Text, Textarea} from 'components'
 import {Form, Formik} from 'formik'
-import {EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs} from 'models'
+import {Blog, EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs, PaginatedBlog} from 'models'
 import React, {forwardRef, useEffect, useRef, useState} from 'react'
 import {ADD_BLOG} from 'services'
 import 'styles/editor.scss'
-import {blockCenter, getEditorjsInstance, history} from 'utils'
+import {getEditorjsInstance, history} from 'utils'
 import * as Yup from 'yup'
 
 const BlogSchema = Yup.object().shape({
@@ -71,6 +69,9 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
   const [addBlog, {loading, error}] = useMutation(ADD_BLOG, {
     onError: (err) => {
       console.log({err})
+    },
+    onCompleted: ({addBlog}: {addBlog: Blog}) => {
+      history.push(`/blog/${addBlog.data?.title.toLowerCase().replaceAll(' ', '-')}-${addBlog.data?._id}`)
     },
   })
 

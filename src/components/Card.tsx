@@ -1,8 +1,6 @@
 import {ThemeProps} from 'models'
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import {hexToRgbA} from 'utils'
-import {Text} from './Text'
-
 export const CardActionsOverlay = styled.div`
   position: absolute;
   height: 100%;
@@ -16,15 +14,28 @@ export const CardActionsOverlay = styled.div`
   background: ${({theme}) => hexToRgbA(theme.nm.background, 0.95)};
 `
 
+const fadeIn = keyframes`
+  from {
+    transform: translateY(-5px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+`
+
 export const Card = styled.div<{clickable?: boolean; overlay?: boolean}>`
   padding: 20px;
   ${(props: ThemeProps) => props.theme.nm};
   ${({clickable}) => (clickable ? {cursor: 'pointer'} : {})}
   transition:  all 0.1s;
+  animation: ${fadeIn} 0.5s linear forwards;
   position: relative;
   :hover {
     transform: translateY(-10px);
-    ${Text} {
+    .title {
       color: ${({theme}) => theme.secondary};
     }
     ${({overlay}) =>

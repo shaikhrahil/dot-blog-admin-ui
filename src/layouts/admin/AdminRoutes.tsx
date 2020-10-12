@@ -1,5 +1,6 @@
 import {ROUTES} from 'configs'
 import {RouteProps} from 'react-router-dom'
+import {AboutView} from 'views/AboutView'
 import {BlogPreviewView} from 'views/BlogPreviewView'
 import {BlogView} from 'views/BlogView'
 import {DashboardView} from 'views/DashboardView'
@@ -19,6 +20,11 @@ const AdminRoutes: RouteProps[] = [
   {
     path: ROUTES.PREVIEW,
     component: BlogPreviewView,
+    exact: true,
+  },
+  {
+    path: ROUTES.ABOUT,
+    component: AboutView,
     exact: true,
   },
   {

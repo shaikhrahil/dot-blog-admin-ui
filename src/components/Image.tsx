@@ -7,6 +7,9 @@ const StyledImage = styled.img`
   border-radius: 30px;
   padding: 10px;
   ${(props: ThemeProps) => props.theme.nm};
+  &.blurred-image {
+    filter: blur(5px);
+  }
 `
 
 export function Image(props: ImgHTMLAttributes<{}>): ReactElement {

@@ -26,7 +26,7 @@ export const LightTheme: Theme = {
     },
     content: {},
     subtitle: {
-      fontSize: '1.5em',
+      fontSize: '18px',
       fontWeight: 700,
     },
     title: {
