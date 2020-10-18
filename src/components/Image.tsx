@@ -8,10 +8,10 @@ const StyledImage = styled.img`
   padding: 10px;
   ${(props: ThemeProps) => props.theme.nm};
   &.blurred-image {
-    filter: blur(5px);
+    filter: blur(3px);
   }
 `
 
 export function Image(props: ImgHTMLAttributes<{}>): ReactElement {
-  return useMemo(() => <StyledImage {...props} />, [props.src])
+  return useMemo(() => <StyledImage {...props} />, [props])
 }

@@ -1,4 +1,9 @@
 #loader {
+  &.fullscreen {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+  }
   .case__loading {
     position: relative;
     margin: 0 auto;

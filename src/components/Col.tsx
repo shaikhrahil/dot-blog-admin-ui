@@ -1,34 +1,31 @@
 import {SpanSize} from 'models'
 import styled from 'styled-components'
+import {device} from './media'
 
 function getWidth(span: number): any {
   if (!span) return {}
   let width = (span / 12) * 100
-  return {width: `${width}%`}
+  return {maxWidth: `${width}%`}
 }
 
 export const Col = styled.div<Partial<Record<SpanSize, number>>>`
   float: left;
   width: 100%;
-  ${({xs}) => (xs ? getWidth(xs) : 'width : 100%')}
+  ${({xs}) => xs && getWidth(xs)}
 
-  @media only screen and (min-width : 768px) {
+  @media ${device.sm} {
     ${({sm}) => sm && getWidth(sm)}
   }
 
-  @media only screen and (min-width: 992px) {
+  @media ${device.md} {
     ${({md}) => md && getWidth(md)}
   }
 
-  @media only screen and (min-width: 1200px) {
+  @media ${device.lg} {
     ${({lg}) => lg && getWidth(lg)}
   }
 
-  @media only screen and (min-width: 1400px) {
+  @media ${device.xl} {
     ${({xl}) => xl && getWidth(xl)}
-  }
-
-  ${'.full-width'} {
-    width: 100%;
   }
 `

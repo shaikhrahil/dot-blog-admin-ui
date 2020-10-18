@@ -1,6 +1,6 @@
 // tools.js
 // import CheckList from '@editorjs/checklist'
-import Code from '@editorjs/code'
+// import Code from '@editorjs/code'
 import Delimiter from '@editorjs/delimiter'
 import Embed from '@editorjs/embed'
 import Header from '@editorjs/header'
@@ -11,8 +11,8 @@ import List from '@editorjs/list'
 import Marker from '@editorjs/marker'
 import Paragraph from '@editorjs/paragraph'
 import Quote from '@editorjs/quote'
-import Raw from '@editorjs/raw'
-import SimpleImage from '@editorjs/simple-image'
+// import Raw from '@editorjs/raw'
+// import SimpleImage from '@editorjs/simple-image'
 import Table from '@editorjs/table'
 import Warning from '@editorjs/warning'
 import {ToolConfig} from '@editorjs/editorjs'
@@ -20,6 +20,7 @@ import {ToolConfig} from '@editorjs/editorjs'
 import InlineImage from 'editorjs-inline-image'
 // import {EditorBlockTypes} from 'models'
 import CodeMirror from '@bomdi/codebox'
+// import shortid from 'shortid'
 // import * as test from 'highlight.js/styles/hopscotch.css' // import your preferred style
 
 export const EditorConfig: ToolConfig = {
@@ -50,7 +51,7 @@ export const EditorConfig: ToolConfig = {
   linkTool: {
     class: LinkTool,
     config: {
-      endpoint: `${process.env.REACT_APP_SERVER_URL}/meta-data`, // Your backend endpoint for url data fetching
+      endpoint: `${process.env.REACT_APP_SERVER_URL}/api/v1/meta-data`, // Your backend endpoint for url data fetching
     },
   },
   image: {
@@ -63,11 +64,10 @@ export const EditorConfig: ToolConfig = {
       },
     },
   },
-  raw: Raw,
   header: {
     class: Header,
     config: {
-      placeholder: 'Enter a header',
+      placeholder: 'Title',
       levels: [1, 2, 3, 4],
       defaultLevel: 2,
     },
@@ -85,5 +85,5 @@ export const EditorConfig: ToolConfig = {
   // checklist: CheckList,
   delimiter: Delimiter,
   inlineCode: InlineCode,
-  simpleImage: SimpleImage,
+  // simpleImage: SimpleImage,
 }

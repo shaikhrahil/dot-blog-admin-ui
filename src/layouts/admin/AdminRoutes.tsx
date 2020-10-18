@@ -3,9 +3,10 @@ import {RouteProps} from 'react-router-dom'
 import {AboutView} from 'views/AboutView'
 import {BlogPreviewView} from 'views/BlogPreviewView'
 import {BlogView} from 'views/BlogView'
-import {DashboardView} from 'views/DashboardView'
+// import {DashboardView} from 'views/DashboardView'
 import {DraftsView} from 'views/DraftsView'
 import {EditBlogView} from 'views/EditBlogView'
+import {LandingView} from 'views/LandingView'
 import {MyBlogsView} from 'views/MyBlogsView'
 import {NewBlogView} from 'views/NewBlogView'
 import {NotFoundView} from 'views/NotFoundView'
@@ -14,7 +15,7 @@ import {ProfileView} from 'views/ProfileView'
 const AdminRoutes: RouteProps[] = [
   {
     path: ROUTES.ROOT,
-    component: DashboardView,
+    component: LandingView,
     exact: true,
   },
   {

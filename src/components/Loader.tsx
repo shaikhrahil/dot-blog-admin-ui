@@ -1,9 +1,14 @@
 import React, {ReactElement} from 'react'
 import 'styles/loader.scss'
+import {classNames} from 'utils'
 
-export function Loader(): ReactElement {
+interface Props {
+  fullscreen?: boolean
+}
+
+export function Loader({fullscreen}: Props): ReactElement {
   return (
-    <div id="loader">
+    <div id="loader" className={classNames({fullscreen})}>
       <div className="case__loading">
         <div className="big__circle">
           <div className="inner__circle"></div>

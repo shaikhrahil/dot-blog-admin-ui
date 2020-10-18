@@ -5,6 +5,7 @@ export const LightTheme: Theme = {
   secondary: '#23e100',
   dark: '#08080b',
   light: '#ffffff',
+  warning: 'yellow',
   error: 'orangered',
   nm: {
     border: 'none',

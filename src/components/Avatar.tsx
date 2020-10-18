@@ -6,7 +6,9 @@ const avatarSizes = {
   large: 100,
 }
 
-export const Avatar = styled.img<{size: keyof typeof avatarSizes; bordered?: boolean}>`
+export const Avatar = styled.img.attrs({
+  referrerpolicy: 'no-referrer',
+})<{size: keyof typeof avatarSizes; bordered?: boolean}>`
   width: ${({size}) => `${avatarSizes[size]}px`};
   height: ${({size}) => `${avatarSizes[size]}px`};
   border-radius: 50%;

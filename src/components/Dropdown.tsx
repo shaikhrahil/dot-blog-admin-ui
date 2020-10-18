@@ -1,98 +1,85 @@
-import {ThemeProps} from 'models'
-import React, {ReactElement, useRef} from 'react'
+import React, {ReactElement, useRef, useState} from 'react'
 import styled from 'styled-components'
-
-export const DropdownMenu = styled.div`
-  padding: 15px 30px;
-  cursor: pointer;
-  opacity: 0;
-  transition: all 0.2s;
-`
-
-export const DropdownMenuItem = styled.div`
-  padding: 5px 8px;
-  text-align: center;
-  cursor: pointer;
-  font-size: ${(props: ThemeProps) => props.theme.font.caption.fontSize};
-  :hover {
-    color: ${({theme}) => theme.primary};
-  }
-`
-
-const StyledDropdownMenu = styled.div`
-  position: absolute;
-  transition: top 0.2s;
-  opacity: 0;
-  top: 80%;
-  left: 0;
-  z-index: 10;
-  min-width: 100%;
-  border-radius: 20px;
-  border: ${({theme}) => `2px solid ${theme.primary}`};
-
-  ::before,
-  ::after {
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: ${({theme}) => `10px solid ${theme.primary}`};
-    top: -10px;
-    content: '';
-    left: 50%;
-    margin-left: -20px;
-    position: absolute;
-  }
-`
-
-export const StyledDropdown = styled.button`
-  cursor: pointer;
-  transition: transform 0.2s;
-  border: none;
-  display: flex;
-  align-items: center;
-  &:focus {
-    outline: none;
-    & + ${StyledDropdownMenu} {
-      z-index: 100;
-    }
-  }
-  background: none;
-  z-index: 11;
-  position: relative;
-`
+import {classNames} from 'utils'
+import {Col} from './Col'
+import {SpanSize} from 'models'
+import {Button} from './Button'
 
 interface Props {
   title: string | ReactElement
   children: ReactElement[]
+  align?: 'right' | 'left'
+  className?: string
+  menuSize?: Partial<Record<SpanSize, number>>
 }
 
-export const Dropdown = (props: Props) => {
-  const menuRef = useRef<HTMLDivElement>(null)
-  const openMenu = () => {
-    if (menuRef.current) {
-      if (menuRef.current.style.opacity === '1') {
-        closeMenu()
-      } else {
-        menuRef.current.style.top = 'calc(100% + 10px)'
-        menuRef.current.style.opacity = '1'
-      }
+export const DropdownItem = styled.div`
+  cursor: pointer;
+  &:hover {
+    color: ${({theme}) => theme.primary};
+  }
+  padding: 10px;
+  & > * {
+    margin: 0px 5px;
+    & > * {
+      margin: 0px 5px;
     }
   }
+`
+
+const StyledDropdown = styled(Col)`
+  border: ${({theme}) => `2px solid ${theme.primary}`};
+  background: ${({theme}) => theme.nm.background};
+  border-radius: 20px;
+  position: fixed;
+  opacity: 0;
+  transition: transform 0.3s, opacity 0.1s;
+  transform: translateY(-50px);
+  z-index: -1;
+  &.open {
+    opacity: 1;
+    transform: translateY(0px);
+    z-index: 10000;
+  }
+`
+
+const DropdownTrigger = styled(Button)`
+  background: transparent;
+  padding: 5px 10px;
+  box-shadow: none;
+  margin: 0;
+  display: flex;
+  align-items: center;
+`
+
+export const Dropdown = (props: Props) => {
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const [open, toggle] = useState<boolean>(false)
 
   const closeMenu = () => {
-    if (menuRef.current) {
-      menuRef.current.style.top = '80%'
-      menuRef.current.style.opacity = '0'
-    }
+    toggle(false)
   }
 
   return (
-    <div onBlur={closeMenu} onClick={(e) => e.stopPropagation()} style={{position: 'relative', display: 'inline-block'}}>
-      <StyledDropdown onClick={openMenu}>{props.title}</StyledDropdown>
-      <StyledDropdownMenu ref={menuRef}>
-        <div className="w-100" onClick={closeMenu}>
-          {props.children}
-        </div>
-      </StyledDropdownMenu>
-    </div>
+    <>
+      <StyledDropdown
+        onClick={closeMenu}
+        style={{
+          top: (triggerRef.current?.offsetTop || 0) + (triggerRef.current?.offsetHeight || 0) + 10,
+          minWidth: triggerRef.current?.offsetWidth,
+          ...(props.align === 'right'
+            ? {right: `calc(100% - ${(triggerRef.current?.offsetLeft || 0) + (triggerRef.current?.offsetWidth || 0) + 30}px)`}
+            : {left: triggerRef.current?.offsetLeft}),
+          width: Object.keys(props.menuSize || {}).length ? '100%' : 'auto',
+        }}
+        {...props.menuSize}
+        className={classNames({open})}
+      >
+        {props.children}
+      </StyledDropdown>
+      <DropdownTrigger ref={triggerRef} className={props.className} onClick={() => toggle(!open)}>
+        {props.title}
+      </DropdownTrigger>
+    </>
   )
 }

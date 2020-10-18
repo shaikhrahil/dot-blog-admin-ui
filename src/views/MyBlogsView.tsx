@@ -5,7 +5,7 @@ import {BlogList} from 'components/BlogList'
 import NoDataImg from 'images/no_data.svg'
 import produce from 'immer'
 import {BlogDto, ModalProps, PaginatedBlogs, QueryMyBlogsArgs} from 'models'
-import React, {useCallback, useEffect, useRef} from 'react'
+import React, {useCallback, useRef} from 'react'
 import {DELETE_BLOG, GET_MY_BLOGS} from 'services'
 import styled from 'styled-components'
 import {blockCenter, history} from 'utils'
@@ -29,7 +29,7 @@ const blogArgs: QueryMyBlogsArgs = {
 }
 
 export const MyBlogsView = () => {
-  const {data, error, loading, fetchMore} = useQuery<{myBlogs: PaginatedBlogs}>(GET_MY_BLOGS, {
+  const {data, loading, fetchMore} = useQuery<{myBlogs: PaginatedBlogs}>(GET_MY_BLOGS, {
     variables: blogArgs,
     onError: (err) => {
       console.error({err})
@@ -63,6 +63,10 @@ export const MyBlogsView = () => {
           data: newBlogs,
         })
 
+        cache.evict({
+          fieldName: 'stories',
+        })
+
         deleteModalRef.current?.toggle(false)
       }
     },
@@ -70,8 +74,10 @@ export const MyBlogsView = () => {
 
   const deleteModalRef = useRef<ModalProps<BlogDto>>(null)
 
+  const endCursor = data?.myBlogs?.data?.pageInfo.endCursor
+
   const loadMore = useCallback(() => {
-    blogArgs.filters.pageCursor = data?.myBlogs?.data?.pageInfo.endCursor || ''
+    blogArgs.filters.pageCursor = endCursor || ''
     fetchMore({
       variables: blogArgs,
       updateQuery: (prev, {fetchMoreResult}) => {
@@ -82,17 +88,7 @@ export const MyBlogsView = () => {
         return res!.myBlogs.data ? res! : prev
       },
     })
-  }, [data?.myBlogs?.data?.pageInfo.endCursor])
-
-  // useEffect(() => {
-  //   window.onscroll = () => {
-  //     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-  //     }
-  //   }
-  //   return () => {
-  //     window.onscroll = null
-  //   }
-  // }, )
+  }, [endCursor, fetchMore])
 
   const actionOverlay = (node: BlogDto) => (
     <Row justify="space-around" align="center" style={{height: '100%'}}>
@@ -120,7 +116,12 @@ export const MyBlogsView = () => {
   return (
     <Row justify="center">
       <Col xs={12} sm={10} lg={8}>
-        <BlogList nodes={data?.myBlogs.data?.edges || []} openBlog={openBlog} actionOverlay={actionOverlay} loadMore={loadMore} />
+        <BlogList
+          nodes={data?.myBlogs.data?.edges || []}
+          openBlog={openBlog}
+          actionOverlay={actionOverlay}
+          loadMore={data?.myBlogs.data?.pageInfo.hasNextPage ? loadMore : undefined}
+        />
         <Modal ref={deleteModalRef} size="sm">
           <Row justify="center" gutter={['md', 'xl']}>
             <Text level="subtitle">Are you sure you want to delete this blog ? </Text>

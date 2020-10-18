@@ -1,6 +1,7 @@
 import {ThemeProps} from 'models'
-import styled, {keyframes} from 'styled-components'
+import styled from 'styled-components'
 import {hexToRgbA} from 'utils'
+import {fadeIn} from './animations'
 export const CardActionsOverlay = styled.div`
   position: absolute;
   height: 100%;
@@ -12,18 +13,6 @@ export const CardActionsOverlay = styled.div`
   z-index: -1;
   cursor: default;
   background: ${({theme}) => hexToRgbA(theme.nm.background, 0.95)};
-`
-
-const fadeIn = keyframes`
-  from {
-    transform: translateY(-5px);
-    opacity: 0;
-  }
-
-  to {
-    transform: translateY(0px);
-    opacity: 1;
-  }
 `
 
 export const Card = styled.div<{clickable?: boolean; overlay?: boolean}>`

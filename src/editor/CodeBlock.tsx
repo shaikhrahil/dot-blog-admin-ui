@@ -18,12 +18,14 @@ export const CodeBlock = (props: EditorCodeBlock) => {
         <code ref={ref}>{props.code}</code>
       </pre> */}
       {/* {props.code} */}
-      <code
-        ref={ref}
-        dangerouslySetInnerHTML={{
-          __html: props.code,
-        }}
-      ></code>
+      <pre>
+        <code
+          ref={ref}
+          dangerouslySetInnerHTML={{
+            __html: props.code,
+          }}
+        ></code>
+      </pre>
     </div>
   )
 }

@@ -17,22 +17,19 @@ export const BlogList = ({nodes, openBlog, actionOverlay, loadMore}: Props) => {
         loadMore && loadMore()
       }
     })
-    if (document.getElementById('blogCard')) {
-      obs.observe(document.getElementById('blogCard')!)
-    }
+    obs.observe(document.getElementById('footer')!)
     return () => {
       obs.disconnect()
     }
-  }, [nodes.length])
+  }, [loadMore])
 
   return useMemo(() => {
     return (
       <Masonry
         breakpointCols={{
           default: 3,
-          1100: 3,
-          700: 2,
-          500: 1,
+          1200: 2,
+          700: 1,
         }}
         className=""
         columnClassName=""
@@ -40,15 +37,7 @@ export const BlogList = ({nodes, openBlog, actionOverlay, loadMore}: Props) => {
       >
         {nodes.map(({node}, i) => {
           const nodeActionOverlay: any = actionOverlay ? actionOverlay(node) : false
-          return (
-            <BlogCard
-              key={node._id}
-              id={nodes.length - 4 === i ? 'blogCard' : ''}
-              blog={node}
-              onClick={() => openBlog(node)}
-              actionOverlay={nodeActionOverlay}
-            />
-          )
+          return <BlogCard key={node._id} blog={node} onClick={() => openBlog(node)} actionOverlay={nodeActionOverlay} />
         })}
       </Masonry>
     )

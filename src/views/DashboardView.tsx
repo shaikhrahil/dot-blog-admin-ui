@@ -50,7 +50,11 @@ export const DashboardView = () => {
   return (
     <Row justify="center">
       <Col xs={12} sm={10} lg={8}>
-        <BlogList nodes={data?.stories.data?.edges || []} openBlog={openBlog} loadMore={loadMore} />
+        <BlogList
+          nodes={data?.stories.data?.edges || []}
+          openBlog={openBlog}
+          loadMore={data?.stories.data?.pageInfo.hasNextPage ? loadMore : undefined}
+        />
       </Col>
 
       {!loading && !data?.stories?.data?.edges.length && (

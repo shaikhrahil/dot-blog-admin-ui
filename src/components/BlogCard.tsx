@@ -1,7 +1,7 @@
 import {Card, CardActionsOverlay, Image as AppImage, Text} from 'components'
 import {BlogDto} from 'models'
 import React, {ReactElement, useEffect, useRef, useState} from 'react'
-import {classNames} from 'utils'
+import {classNames, getThumbnail} from 'utils'
 import {Avatar} from './Avatar'
 import {Row} from './Row'
 
@@ -9,16 +9,22 @@ interface Props {
   blog: BlogDto
   onClick?: () => void
   actionOverlay?: ReactElement
-  id: string
 }
 
-export function BlogCard({blog, onClick, actionOverlay, id}: Props): ReactElement {
-  const [imageUrl, setImageUrl] = useState(blog.cover + '&fit=crop&w=100&q=10&fm=jpg')
+export function BlogCard({blog, onClick, actionOverlay}: Props): ReactElement {
+  const [imageUrl, setImageUrl] = useState(blog.cover ? getThumbnail(blog.cover) : '')
   const ref = useRef<any>(null)
   useEffect(() => {
     const observer = new IntersectionObserver((x) => {
       if (x[0].isIntersecting) {
-        setImageUrl(blog.cover || '')
+        const buffer = new Image()
+        buffer.src = blog.cover || ''
+        buffer.onload = () => {
+          if (observer) {
+            setImageUrl(blog.cover || '')
+            observer.disconnect()
+          }
+        }
       }
     })
     observer.observe(ref.current)
@@ -28,7 +34,7 @@ export function BlogCard({blog, onClick, actionOverlay, id}: Props): ReactElemen
   }, [])
 
   return (
-    <Card ref={ref} id={id} clickable onClick={onClick} overlay={!!actionOverlay}>
+    <Card ref={ref} clickable onClick={onClick} overlay={!!actionOverlay}>
       {blog.cover && (
         <AppImage
           className={classNames({

@@ -1,4 +1,4 @@
-import {ApolloClient, ApolloProvider, createHttpLink, DefaultOptions} from '@apollo/client'
+import {ApolloClient, ApolloProvider, createHttpLink} from '@apollo/client'
 import {setContext} from '@apollo/client/link/context'
 import {useAuth0} from '@auth0/auth0-react'
 import React, {ReactElement} from 'react'
@@ -28,16 +28,16 @@ export function ApolloWrapper({children}: Props): ReactElement {
     }
   })
 
-  const defaultOptions: DefaultOptions = {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'ignore',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  }
+  // const defaultOptions: DefaultOptions = {
+  //   watchQuery: {
+  //     fetchPolicy: 'no-cache',
+  //     errorPolicy: 'ignore',
+  //   },
+  //   query: {
+  //     fetchPolicy: 'no-cache',
+  //     errorPolicy: 'all',
+  //   },
+  // }
 
   const client = new ApolloClient({
     cache,

@@ -1,14 +1,15 @@
-import { useMutation, useQuery } from '@apollo/client'
-import { useAuth0 } from '@auth0/auth0-react'
-import { API } from '@editorjs/editorjs'
-import { Button, Card, Checkbox, Col, Image, Input, Modal, Row, Text, Textarea } from 'components'
-import { Form, Formik } from 'formik'
-import { Blog, BlogDto, EditorBlock, EditorImageBlock, ModalProps, MutationAddBlogArgs, QueryMyBlogArgs } from 'models'
-import React, { forwardRef, useEffect, useRef, useState } from 'react'
-import { useLocation } from 'react-router-dom'
-import { GET_MY_BLOG, UPDATE_BLOG } from 'services'
+import {useMutation, useQuery} from '@apollo/client'
+import {useAuth0} from '@auth0/auth0-react'
+import {API} from '@editorjs/editorjs'
+import {Button, Card, Carousel, Checkbox, Col, Image, Input, Modal, Row, Text, Textarea} from 'components'
+import {Form, Formik} from 'formik'
+import {useToast} from 'hooks/useToast'
+import {Blog, BlogDto, EditorBlock, ModalProps, QueryMyBlogArgs, ToastLevels, MutationUpdateBlogArgs} from 'models'
+import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
+import {useLocation} from 'react-router-dom'
+import {GET_MY_BLOG, UPDATE_BLOG} from 'services'
 import 'styles/editor.scss'
-import { getEditorjsInstance, history } from 'utils'
+import {getEditorjsInstance, history} from 'utils'
 import * as Yup from 'yup'
 
 const BlogSchema = Yup.object().shape({
@@ -36,10 +37,13 @@ export const EditBlogView = () => {
     }
   }
 
-  const onChange = async (changes: API) => {
-    const blocks = await (await changes.saver.save()).blocks
-    setState({...state, blocks})
-  }
+  const onChange = useCallback(
+    async (changes: API) => {
+      const blocks = await (await changes.saver.save()).blocks
+      setState({...state, blocks})
+    },
+    [setState, state],
+  )
 
   const location = useLocation<{blog: BlogDto}>()
 
@@ -78,106 +82,116 @@ export const EditBlogView = () => {
   return (
     <Row justify="center" id="editBlogView">
       <SaveBlogModal ref={saveModalRef} blocks={state.blocks} />
+      <div className="ce-block-static">
+        <h1 contentEditable={true} className="ce-header" id="blogTitle" dangerouslySetInnerHTML={{__html: data?.story.data?.title || ''}}></h1>
+      </div>
+      <div className="ce-block-static">
+        <h3
+          contentEditable={true}
+          className="ce-header"
+          id="blogDescription"
+          dangerouslySetInnerHTML={{__html: data?.story.data?.subtitle || ''}}
+        ></h3>
+      </div>
       <div ref={editorRef} style={{width: '90%'}} id="editorjs"></div>
     </Row>
   )
 }
 
 const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
-  const [addBlog, {loading, error}] = useMutation(UPDATE_BLOG, {
+  const {notify, closeNotification} = useToast()
+
+  const saveBlogMsgs: Partial<Record<ToastLevels, string>> = {
+    success: 'Blog saved successfully',
+    loading: 'Saving blog...',
+  }
+
+  const showErrorMsg = (msg: string) => {
+    closeNotification(saveBlogMsgs.loading!)
+    notify({message: msg, level: 'error'})
+  }
+
+  const [updateBlog, {loading}] = useMutation(UPDATE_BLOG, {
     onError: (err) => {
-      console.log({err})
+      showErrorMsg(err.message)
     },
     onCompleted: ({updateBlog}: {updateBlog: Blog}) => {
+      if (!updateBlog.success) {
+        console.error(updateBlog.message)
+        showErrorMsg(updateBlog.message)
+        return
+      }
+      closeNotification(saveBlogMsgs.loading!)
+      notify({message: saveBlogMsgs.success!, level: 'success', id: saveBlogMsgs.loading!})
       history.push(`/blog/${updateBlog.data?.title.toLowerCase().replaceAll(' ', '-')}-${updateBlog.data?._id}`)
+    },
+    update: (cache) => {
+      cache.evict({
+        fieldName: 'stories',
+      })
+      cache.evict({
+        fieldName: 'myBlogs',
+      })
+      cache.gc()
     },
   })
 
-  let title: any = {}
-  let subtitle: any = {}
-  let cover: string = ''
+  const images: string[] = []
 
-  ;(blocks as EditorBlock[]).forEach((x, i) => {
-    if (x.type === 'header') {
-      if (!title.value) {
-        title.index = i
-        title.value = x
-      } else if (!subtitle.value) {
-        subtitle.index = i
-        subtitle.value = x
-      }
-    }
+  ;(blocks as EditorBlock[]).forEach((x) => {
     if (x.type === 'image') {
-      cover = (x.data as EditorImageBlock).url
+      images.push(x.data.url)
     }
   })
+  const [cover, setCover] = useState(images[0] || '')
 
   const {user} = useAuth0()
-  const location = useLocation<{blog: BlogDto}>()
 
   const saveBlog = async (formFields: any) => {
-    const variables: MutationAddBlogArgs = {
+    notify({message: saveBlogMsgs.loading!, level: 'loading', id: saveBlogMsgs.loading!})
+    const variables: MutationUpdateBlogArgs = {
       blog: {
-        _id: location.state.blog._id,
         ...formFields,
+        cover,
         username: user.given_name,
         profilePicture: user.picture,
-        cover,
-        sections: JSON.stringify(
-          blocks.map((x, i) => ({
-            ...x,
-            ...(title.index === i
-              ? {...x, data: {...x.data, text: formFields.title}}
-              : subtitle.index === i
-              ? {...x, data: {...x.data, text: formFields.subtitle}}
-              : x),
-          })),
-        ),
+        sections: JSON.stringify(blocks),
       },
     }
-    addBlog({variables})
+    updateBlog({variables})
   }
 
   const previewBlog = (formFields: any) => {
     const myWindow: any = window.open('/preview', '_blank')
     myWindow.blog = {
       ...formFields,
+      cover,
       username: user.given_name,
       profilePicture: user.picture,
-      cover,
-      sections: JSON.stringify(
-        blocks.map((x, i) => ({
-          ...x,
-          ...(title.index === i
-            ? {...x, data: {...x.data, text: formFields.title}}
-            : subtitle.index === i
-            ? {...x, data: {...x.data, text: formFields.subtitle}}
-            : x),
-        })),
-      ),
+      sections: JSON.stringify(blocks),
     }
   }
 
   return (
     <Modal ref={ref} size="lg">
-      <Row justify="space-around" align="center" gutter={['xs', 'md']}>
-        <Formik
-          onSubmit={saveBlog}
-          enableReinitialize
-          initialValues={{
-            title: title.value?.data.text || '',
-            subtitle: subtitle.value?.data.text || '',
-            published: true,
-          }}
-          validationSchema={BlogSchema}
-        >
-          {({values}) => (
-            <>
-              <Col xs={12} sm={5}>
-                <Form>
+      <Formik
+        onSubmit={saveBlog}
+        enableReinitialize
+        initialValues={{
+          title: document.getElementById('blogTitle')?.innerHTML || '',
+          subtitle: document.getElementById('blogDescription')?.innerHTML || '',
+          published: false,
+        }}
+        validationSchema={BlogSchema}
+      >
+        {({values}) => (
+          <>
+            <Form style={{width: '100%'}}>
+              <Row justify="space-around" align="center" gutter={['xs', 'md']}>
+                <Col xs={12} md={5}>
                   <Input name="title" placeholder="Title" />
                   <Textarea name="subtitle" placeholder="Description" rows={4} />
-                  <Checkbox id="publishCheck" name="published" label="Published" />
+                  <Checkbox id="publishCheck" name="published" label="Publish" />
                   <Row justify="space-around">
                     <Button type="submit" style={{width: '40%'}} disabled={loading}>
                       Save
@@ -186,24 +200,28 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
                       Preview
                     </Button>
                   </Row>
-                </Form>
-              </Col>
-              <Col xs={12} sm={5}>
-                <Card>
-                  {cover && <Image key={10} src={cover} />}
-                  <Text level="title">{values.title}</Text>
-                  <Text level="content" truncate={2}>
-                    {values.subtitle}
-                  </Text>
-                </Card>
-              </Col>
-            </>
-          )}
-        </Formik>
-        {/* <Modal ref={previewModalRef} size="xl">
-          <BlogPreviewModal />
-        </Modal> */}
-      </Row>
+                </Col>
+                <Col xs={12} md={5}>
+                  <Card>
+                    {images.length ? (
+                      <Carousel max={images.length}>
+                        {(index) => {
+                          setCover(images[index] || '')
+                          return <Image src={images[index]} />
+                        }}
+                      </Carousel>
+                    ) : null}
+                    <Text level="title">{values.title}</Text>
+                    <Text level="content" truncate={2}>
+                      {values.subtitle}
+                    </Text>
+                  </Card>
+                </Col>
+              </Row>
+            </Form>
+          </>
+        )}
+      </Formik>
     </Modal>
   )
 })

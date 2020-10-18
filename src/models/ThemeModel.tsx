@@ -6,6 +6,7 @@ export interface Theme {
   primary: string
   secondary: string
   dark: string
+  warning: string
   light: string
   error: string
   space: Record<SpanSize, string>

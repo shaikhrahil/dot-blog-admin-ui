@@ -14,6 +14,24 @@
     font-size: 1em;
   }
 
+  .ce-block-static {
+    width: 90%;
+    & > * {
+      outline: none !important;
+      margin: 10px auto;
+      padding: 0px;
+      max-width: 650px;
+    }
+    #blogDescription:empty::before {
+      content: 'Description';
+      color: gray;
+    }
+    #blogTitle:empty::before {
+      content: 'Title';
+      color: gray;
+    }
+  }
+
   blockquote {
     font-style: italic;
     border-left: 5px solid gray;
