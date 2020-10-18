@@ -29,7 +29,6 @@
     "editorjs-codemirror": "^1.1.0",
     "editorjs-inline-image": "^0.1.1",
     "formik": "^2.1.7",
-    "gh-pages": "^3.1.0",
     "graphql": "^15.3.0",
     "highlight.js": "^10.2.1",
     "immer": "^7.0.9",
@@ -40,18 +39,15 @@
     "react-scripts": "3.4.3",
     "shortid": "^2.2.15",
     "styled-components": "^5.2.0",
-    "typescript": "^3.7.4",
-    "xstate": "^4.13.0",
+    "typescript": "^4.0.3",
     "yup": "^0.29.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "deploy": "gh-pages -d build",
     "codegen": "graphql-codegen --config codegen.yml",
-    "eject": "react-scripts eject",
-    "predeploy": "npm run build"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
