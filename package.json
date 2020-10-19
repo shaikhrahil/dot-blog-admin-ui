@@ -28,6 +28,8 @@
     "@styled-icons/boxicons-solid": "^10.18.0",
     "editorjs-codemirror": "^1.1.0",
     "editorjs-inline-image": "^0.1.1",
+    "express": "^4.17.1",
+    "express-favicon": "^2.0.1",
     "formik": "^2.1.7",
     "graphql": "^15.3.0",
     "highlight.js": "^10.2.1",
@@ -43,7 +45,7 @@
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "node server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "codegen": "graphql-codegen --config codegen.yml",
