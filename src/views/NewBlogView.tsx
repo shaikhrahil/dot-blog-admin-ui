@@ -39,7 +39,7 @@ export const NewBlogView = () => {
   const saveImageRef = useRef<ModalProps>(null)
   const [state, setState] = useState<State>({blocks: []})
   // const [uploadingImages, setUploadingImages] = useState<Record<string, string>[]>([])
-  const {user, isAuthenticated} = useAuth0()
+  const {isAuthenticated} = useAuth0()
   const openSaveModal = async (e: KeyboardEvent) => {
     if (e.key === 's' && e.ctrlKey) {
       e.preventDefault()
@@ -149,7 +149,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
     }
   })
   const [cover, setCover] = useState(images[0] || '')
-
+  const {user, isAuthenticated} = useAuth0()
 
   const saveBlog = async (formFields: any) => {
     notify({message: saveBlogMsgs.loading!, level: 'loading', id: saveBlogMsgs.loading!})

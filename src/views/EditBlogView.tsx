@@ -90,6 +90,7 @@ export const EditBlogView = () => {
       }
     }
   }, [data])
+  const {isAuthenticated} = useAuth0()
 
   return (
     <Row justify="center" id="editBlogView">
@@ -163,7 +164,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
   })
   const [cover, setCover] = useState(images[0] || '')
 
-  const {user, isAuthenticated} = useAuth0()
+  const {user} = useAuth0()
 
   const saveBlog = async (formFields: any) => {
     notify({message: saveBlogMsgs.loading!, level: 'loading', id: saveBlogMsgs.loading!})
