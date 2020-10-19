@@ -51,7 +51,11 @@ export const NewBlogView = () => {
       document.removeEventListener('keydown', openSaveModal)
       editor.isReady
         .then(() => {
-          editor.destroy()
+          try {
+            editor.destroy()
+          } catch (e) {
+            console.error(e)
+          }
         })
         .catch((err) => {
           console.log({err})
