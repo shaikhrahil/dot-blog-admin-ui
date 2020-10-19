@@ -106,9 +106,11 @@ export const EditBlogView = () => {
         ></h3>
       </div>
 
-      <SaveButton onClick={() => saveModalRef.current?.toggle()}>
-        <Save width="30px" />
-      </SaveButton>
+      {isAuthenticated && (
+        <SaveButton onClick={() => saveModalRef.current?.toggle()}>
+          <Save width="30px" />
+        </SaveButton>
+      )}
       <div ref={editorRef} style={{width: '90%'}} id="editorjs"></div>
     </Row>
   )
@@ -161,7 +163,7 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
   })
   const [cover, setCover] = useState(images[0] || '')
 
-  const {user} = useAuth0()
+  const {user, isAuthenticated} = useAuth0()
 
   const saveBlog = async (formFields: any) => {
     notify({message: saveBlogMsgs.loading!, level: 'loading', id: saveBlogMsgs.loading!})

@@ -39,7 +39,7 @@ export const NewBlogView = () => {
   const saveImageRef = useRef<ModalProps>(null)
   const [state, setState] = useState<State>({blocks: []})
   // const [uploadingImages, setUploadingImages] = useState<Record<string, string>[]>([])
-  const {isAuthenticated} = useAuth0()
+  const {user, isAuthenticated} = useAuth0()
   const openSaveModal = async (e: KeyboardEvent) => {
     if (e.key === 's' && e.ctrlKey) {
       e.preventDefault()
@@ -85,9 +85,11 @@ export const NewBlogView = () => {
       <div className="ce-block-static">
         <h3 contentEditable={true} className="ce-header" id="blogDescription"></h3>
       </div>
-      <SaveButton onClick={() => saveModalRef.current?.toggle()}>
-        <Save width="30px" />
-      </SaveButton>
+      {isAuthenticated && (
+        <SaveButton onClick={() => saveModalRef.current?.toggle()}>
+          <Save width="30px" />
+        </SaveButton>
+      )}
       <div ref={editorRef} style={{width: '90%'}} id="editorjs"></div>
       <Modal ref={saveImageRef} size="sm" disableBackdropClose>
         <>
@@ -148,7 +150,6 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
   })
   const [cover, setCover] = useState(images[0] || '')
 
-  const {user} = useAuth0()
 
   const saveBlog = async (formFields: any) => {
     notify({message: saveBlogMsgs.loading!, level: 'loading', id: saveBlogMsgs.loading!})
