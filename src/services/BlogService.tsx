@@ -72,6 +72,7 @@ export const GET_MY_BLOGS = gql`
             _id
             createdAt
             title
+            subtitle
             cover
             author {
               authId

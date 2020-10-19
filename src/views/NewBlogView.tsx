@@ -1,15 +1,27 @@
 import {useMutation} from '@apollo/client'
 import {useAuth0} from '@auth0/auth0-react'
 import {API} from '@editorjs/editorjs'
+import {Save} from '@styled-icons/boxicons-regular'
 import {Button, Card, Carousel, Checkbox, Col, Image, Input, Loader, Modal, Row, Text, Textarea} from 'components'
 import {Form, Formik} from 'formik'
 import {useToast} from 'hooks/useToast'
 import {Blog, EditorBlock, ModalProps, MutationAddBlogArgs, ToastLevels} from 'models'
 import React, {forwardRef, useCallback, useEffect, useRef, useState} from 'react'
 import {ADD_BLOG} from 'services'
+import styled from 'styled-components'
 import 'styles/editor.scss'
 import {getEditorjsInstance, history} from 'utils'
 import * as Yup from 'yup'
+
+const SaveButton = styled(Button)`
+  position: fixed;
+  bottom: 40px;
+  right: 20px;
+  border-radius: 50%;
+  padding: 0;
+  width: 80px;
+  height: 80px;
+`
 
 const BlogSchema = Yup.object().shape({
   title: Yup.string().min(5, 'Minimum 5 characters required').max(50, 'Max 50 characters allowed').required('Title Required'),
@@ -73,6 +85,9 @@ export const NewBlogView = () => {
       <div className="ce-block-static">
         <h3 contentEditable={true} className="ce-header" id="blogDescription"></h3>
       </div>
+      <SaveButton onClick={() => saveModalRef.current?.toggle()}>
+        <Save width="30px" />
+      </SaveButton>
       <div ref={editorRef} style={{width: '90%'}} id="editorjs"></div>
       <Modal ref={saveImageRef} size="sm" disableBackdropClose>
         <>
@@ -177,19 +192,6 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
             <Form style={{width: '100%'}}>
               <Row justify="space-around" align="center" gutter={['xs', 'md']}>
                 <Col xs={12} md={5}>
-                  <Input name="title" placeholder="Title" />
-                  <Textarea name="subtitle" placeholder="Description" rows={4} />
-                  <Checkbox id="publishCheck" name="published" label="Publish" />
-                  <Row justify="space-around">
-                    <Button type="submit" style={{width: '40%'}} disabled={loading}>
-                      Save
-                    </Button>
-                    <Button type="button" style={{width: '40%'}} onClick={() => previewBlog(values)}>
-                      Preview
-                    </Button>
-                  </Row>
-                </Col>
-                <Col xs={12} md={5}>
                   <Card>
                     {images.length ? (
                       <Carousel max={images.length}>
@@ -204,6 +206,19 @@ const SaveBlogModal = forwardRef<ModalProps, State>(({blocks}, ref) => {
                       {values.subtitle}
                     </Text>
                   </Card>
+                </Col>
+                <Col xs={12} md={5}>
+                  <Input name="title" placeholder="Title" />
+                  <Textarea name="subtitle" placeholder="Description" rows={4} />
+                  <Checkbox id="publishCheck" name="published" label="Publish" />
+                  <Row justify="space-around">
+                    <Button type="submit" style={{width: '40%'}} disabled={loading}>
+                      Save
+                    </Button>
+                    <Button type="button" style={{width: '40%'}} onClick={() => previewBlog(values)}>
+                      Preview
+                    </Button>
+                  </Row>
                 </Col>
               </Row>
             </Form>

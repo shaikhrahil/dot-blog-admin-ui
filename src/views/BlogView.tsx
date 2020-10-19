@@ -1,7 +1,8 @@
 import {useQuery} from '@apollo/client'
 import {useAuth0} from '@auth0/auth0-react'
-import {Col, Row} from 'components'
+import {Col, Header, Row} from 'components'
 import {EditorBlockConfig} from 'editor/EditorBlockConfig'
+import {HeaderBlock} from 'editor/HeaderBlock'
 import {Blog, EditorBlock, QueryStoryArgs} from 'models'
 import React from 'react'
 import {useParams} from 'react-router-dom'
@@ -28,7 +29,9 @@ export const BlogView = () => {
 
   const sections = data?.story?.data?.sections ? JSON.parse(data?.story?.data?.sections) : []
   return (
-    <Row id="blogViewSection" direction="column" align="center" justify="center">
+    <Row id="blogViewSection" direction="column">
+      <HeaderBlock level={1} text={data?.story.data?.title || ''} />
+      <HeaderBlock level={3} text={data?.story.data?.subtitle || ''} />
       {sections.map((x: EditorBlock) => {
         const props = x.data
         const Component = EditorBlockConfig[x.type]

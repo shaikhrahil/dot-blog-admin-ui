@@ -45,11 +45,13 @@
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "node server.js",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "codegen": "graphql-codegen --config codegen.yml",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "serve": "node server.js",
+    "build:serve": "npm run build && npm run serve"
   },
   "eslintConfig": {
     "extends": "react-app"

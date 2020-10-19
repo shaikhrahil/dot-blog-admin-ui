@@ -16,7 +16,9 @@ function Auth(): ReactElement {
   return (
     <main style={{minHeight: '100vh', display: 'flex', flexDirection: 'column'}}>
       <Header>
-        <Logo alt="logo" />
+        <NavLink to={ROUTES.ROOT} exact>
+          <Logo alt="logo" />
+        </NavLink>
         <Col className="menu">
           <Row justify="flex-end" align="center" gutter="xl">
             <NavLink to={ROUTES.ROOT} exact>

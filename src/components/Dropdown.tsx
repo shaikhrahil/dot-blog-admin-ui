@@ -68,7 +68,7 @@ export const Dropdown = (props: Props) => {
           top: (triggerRef.current?.offsetTop || 0) + (triggerRef.current?.offsetHeight || 0) + 10,
           minWidth: triggerRef.current?.offsetWidth,
           ...(props.align === 'right'
-            ? {right: `calc(100% - ${(triggerRef.current?.offsetLeft || 0) + (triggerRef.current?.offsetWidth || 0)}px)`}
+            ? {right: `calc(100% - ${(triggerRef.current?.offsetLeft || 0) + (triggerRef.current?.offsetWidth || 0) - 10}px)`}
             : {left: triggerRef.current?.offsetLeft}),
           width: Object.keys(props.menuSize || {}).length ? '100%' : 'auto',
         }}

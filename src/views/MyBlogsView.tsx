@@ -2,6 +2,7 @@ import {useMutation, useQuery} from '@apollo/client'
 import {BookOpen, Edit, TrashAlt} from '@styled-icons/boxicons-regular'
 import {Button, Col, Loader, Modal, Row, Text} from 'components'
 import {BlogList} from 'components/BlogList'
+import {useToast} from 'hooks/useToast'
 import NoDataImg from 'images/no_data.svg'
 import produce from 'immer'
 import {BlogDto, ModalProps, PaginatedBlogs, QueryMyBlogsArgs} from 'models'
@@ -29,6 +30,8 @@ const blogArgs: QueryMyBlogsArgs = {
 }
 
 export const MyBlogsView = () => {
+  const {notify, closeNotification} = useToast()
+
   const {data, loading, fetchMore} = useQuery<{myBlogs: PaginatedBlogs}>(GET_MY_BLOGS, {
     variables: blogArgs,
     onError: (err) => {
@@ -46,10 +49,15 @@ export const MyBlogsView = () => {
 
   const [deleteBlog, deleteBlogReq] = useMutation(DELETE_BLOG, {
     onError: (err) => {
+      closeNotification('blog-delete')
+      notify({level: 'error', message: err.message, id: 'blog-delete'})
       console.error({err})
     },
     update: (cache, {data}) => {
       if ((data as any).deleteBlog?.success) {
+        closeNotification('blog-delete')
+        notify({level: 'success', message: 'Deleted successfully', id: 'blog-delete'})
+
         const blogs = cache.readQuery<{myBlogs: PaginatedBlogs}>({
           query: GET_MY_BLOGS,
         })
@@ -128,6 +136,7 @@ export const MyBlogsView = () => {
             <Row justify="center" gutter={['md', 'md']} style={{width: '100%'}}>
               <Button
                 onClick={() => {
+                  notify({level: 'loading', message: 'Deleting blog', id: 'blog-delete'})
                   deleteBlog({variables: {id: deleteModalRef.current?.getData()?._id}})
                 }}
                 disabled={deleteBlogReq.loading}
